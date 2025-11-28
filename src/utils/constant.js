@@ -15,5 +15,7 @@ export const articles = [
     }
 ];
 
+
 export const Jeton_secret_code = 'moHk9oFd-7ka4(lH_fK40';
 export const publisher_profile_access= ['publisher']
+export const user_profile_access= ['user', 'publisher']
