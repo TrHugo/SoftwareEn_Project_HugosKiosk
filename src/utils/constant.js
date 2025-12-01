@@ -18,7 +18,7 @@ export const client = [
     {
         id: 1,
         name: 'Leo',
-        email: "ronan",
+        email: "test@example.com",
         mdp: "test"
     }
 ]
