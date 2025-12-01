@@ -14,3 +14,4 @@ describe("GET /boom", () => {
     expect(typeof res.body.message).toBe("string");
   });
 });
+

@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { checkUser, checkRole} from '../../utils/JetonVerification';
+import { checkUser, checkRole} from '../../utils/JetonVerification.js';
 import { publisher_profile_access, user_profile_access } from "../../utils/constant.js";
 
-const router = express.Router();
+const router = Router();
 
 router.get('/profile/publisher/:userID', checkUser, checkRole(publisher_profile_access), (req, res, next) =>{
     const publisherId = parseInt(req.params.userID, 10);
@@ -18,7 +18,7 @@ router.get('/profile/publisher/:userID', checkUser, checkRole(publisher_profile_
     const publisher = publishers.find(a => a.id === publisherId);
 
     if (publisher) {
-        res.json({
+        res.status(200).json({
             success: true,
             article: publisher
         });

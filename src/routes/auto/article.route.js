@@ -1,8 +1,8 @@
-import { Router } from "express";
 import { articles } from "../../utils/constant.js";
-import { checkUser} from '../../utils/JetonVerification';
+import { checkUser} from '../../utils/JetonVerification.js';
+import { Router } from "express";
 
-const router = express.Router();
+const router = Router();
 
 
 router.get('/article/:articleId',checkUser, (req, res, next) => {
@@ -18,7 +18,7 @@ router.get('/article/:articleId',checkUser, (req, res, next) => {
     const article = articles.find(a => a.id === articleId);
 
     if (article) {
-        res.json({
+        res.status(200).json({
             success: true,
             article: article
         });

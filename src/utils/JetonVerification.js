@@ -1,6 +1,5 @@
-import { Jeton_secret_code } from '../constant.js' //To change
-
-const jwt = require('jsonwebtoken');
+import { Jeton_secret_code } from '../utils/constant.js' //To change
+import jwt from 'jsonwebtoken';
 
 export const checkUser = (req, res, next) => {
     try {
