@@ -1,11 +1,11 @@
-import { Jeton_secret_code } from '../utils/constant.js' //To change
+import { JETON_CODE } from '../utils/constant.js' //To change
 import jwt from 'jsonwebtoken';
 
 export const checkUser = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(" ")[1]; 
 
-        const decodedToken = jwt.verify(token, Jeton_secret_code);
+        const decodedToken = jwt.verify(token, JETON_CODE);
         
         req.userData = { userId: decodedToken.userId };
         req.userType = { userType:decodedToken.Type };
