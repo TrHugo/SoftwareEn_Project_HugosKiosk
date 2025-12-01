@@ -1,5 +1,6 @@
-import { articles } from "../../utils/constant.js";
-import { checkUser} from '../../utils/JetonVerification.js';
+import { login } from '../../utils/JetonCreation.js';
 import { Router } from "express";
 
-
+const router = Router();
+router.post('/login', login)
+export default router;

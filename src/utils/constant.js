@@ -14,7 +14,7 @@ export const articles = [
         // type =
     }
 ];
-export const user = [
+export const client = [
     {
         id: 1,
         name: 'Leo',
