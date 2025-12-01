@@ -4,15 +4,18 @@ import jwt from 'jsonwebtoken';
 export const checkUser = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(" ")[1]; 
-
         const decodedToken = jwt.verify(token, JETON_CODE);
-        
+        if (!decodedToken.Id || !decodedToken.Type) {
+            throw new Error("Missing essential user data in token.");
+        }
+
         req.userData = { userId: decodedToken.Id };
         req.userType = { userType:decodedToken.Type };
-        
+
         next();
 
     } catch (error) {
+        console.error("caught error : ",error.message);
         const err = new Error("Failed Authentification. Access refused");
         err.status = 401;
         return next(err);
