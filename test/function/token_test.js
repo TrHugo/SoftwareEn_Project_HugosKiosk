@@ -1,13 +1,28 @@
 import jwt from 'jsonwebtoken';
 import {JETON_CODE} from '../../src/utils/constant.js'
+const user_u = { Id: 1, Type: "user" };
 
-// Les mêmes informations utilisées dans votre mockCheckUser
-//const JETON_CODE = "moHk9oFd-7ka4(lH_fK40"; 
-const user = { Id: "1", Type: "user" };
-
-const token = jwt.sign(
-    user,
+const token_u = jwt.sign(
+    user_u,
     JETON_CODE,
-    { expiresIn: '1h' } // Le temps d'expiration n'a pas d'importance pour les tests immédiats
+    { expiresIn: '1h' } 
 );
-export const VALID_TEST_TOKEN = token;
+export const VALID_TEST_TOKEN_U = token_u;
+
+const user_p = { Id: 1, Type: "publisher" };
+
+const token_p = jwt.sign(
+    user_p,
+    JETON_CODE,
+    { expiresIn: '1h' } 
+);
+export const VALID_TEST_TOKEN_P = token_p;
+
+const user_mp = { Id: 5, Type: "publisher" };
+
+const token_mp = jwt.sign(
+    user_mp,
+    JETON_CODE,
+    { expiresIn: '1h' } 
+);
+export const VALID_TEST_TOKEN_MP = token_mp;

@@ -1,11 +1,9 @@
 import request from "supertest";
 import app from "../src/app.js"; 
 import { describe, it, expect } from "vitest"; 
-import jwt from 'jsonwebtoken';
-import {VALID_TEST_TOKEN} from './function/token_test.js'
+import {VALID_TEST_TOKEN_U} from './function/token_test.js'
 
-
-const AUTHORIZATION_HEADER = `Bearer ${VALID_TEST_TOKEN}`;
+const AUTHORIZATION_HEADER = `Bearer ${VALID_TEST_TOKEN_U}`;
 const INVALID_AUTHORIZATION_HEADER = `Bearer invalid.token.12345`;
 const EXISTING_ARTICLE_ID = 1; 
 const NON_EXISTING_ARTICLE_ID = 9999;
@@ -48,12 +46,12 @@ describe("GET /article/:articleId", () => {
         expect(res.body.message).toBe("Article ID incorrect");
     });
 
-    it("500 with valid token if article not found", async () => {
+    it("404 with valid token if article not found", async () => {
         const res = await request(app)
             .get(`/article/${NON_EXISTING_ARTICLE_ID}`)
             .set("Authorization", AUTHORIZATION_HEADER);
 
-        expect(res.status).toBe(500);
+        expect(res.status).toBe(404);
         expect(res.body.message).toBe("No Article found");
     });
 

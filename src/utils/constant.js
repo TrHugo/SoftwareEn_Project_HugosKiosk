@@ -22,6 +22,15 @@ export const client = [
         mdp: "test"
     }
 ]
+export const publishers = [
+    {
+        id: 1,
+        name: 'Hugo',
+        email: "test@example.com",
+        mdp: "test2"
+    }
+]
+
 
 
 export const JETON_CODE = 'moHk9oFd-7ka4(lH_fK40';

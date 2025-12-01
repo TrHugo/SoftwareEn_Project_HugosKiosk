@@ -7,7 +7,7 @@ export const checkUser = (req, res, next) => {
 
         const decodedToken = jwt.verify(token, JETON_CODE);
         
-        req.userData = { userId: decodedToken.userId };
+        req.userData = { userId: decodedToken.Id };
         req.userType = { userType:decodedToken.Type };
         
         next();
@@ -21,7 +21,7 @@ export const checkUser = (req, res, next) => {
 export const checkRole = (requiredRoles) => {
     return (req, res, next) => {
        
-        if (!req.userType || !req.userType.userType) {
+        if (!req.userType || !requiredRoles) {
             const err = new Error("No type of user found");
             err.status = 500;
             return next(err);
