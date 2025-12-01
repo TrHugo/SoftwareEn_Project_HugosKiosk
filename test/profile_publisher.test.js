@@ -8,8 +8,7 @@ const AUTHORIZATION_HEADER_P = `Bearer ${VALID_TEST_TOKEN_P}`;
 const AUTHORIZATION_HEADER_MP = `Bearer ${VALID_TEST_TOKEN_MP}`;
 const INVALID_AUTHORIZATION_HEADER = `Bearer invalid.token.12345`;
 const EXISTING_PUBLISHER_ID = 1
-const NON_EXISTING_ID = 999
-const WRONG_ID = 5
+const WRONG_ID = 999
 
 describe("GET /profile/publisher/:userID", () => {
     it("401 if missing token", async () => {
@@ -49,7 +48,7 @@ describe("GET /profile/publisher/:userID", () => {
         expect(res.body.message).toBe("Publisher ID incorrect");
     });
 
-    it("403 with valid token if publisher not found", async () => {
+    it("404 with valid token if publisher not found", async () => {
         const res = await request(app)
             .get(`/profile/publisher/${WRONG_ID}`)
             .set("Authorization", AUTHORIZATION_HEADER_MP);
@@ -67,7 +66,7 @@ describe("GET /profile/publisher/:userID", () => {
         expect(res.body.message).toBe("Access refused");
     });
 
-    it("403 with valid token and valid publisher but not publisher", async () => {
+    it("403 with valid token and valid publisher but not right publisher", async () => {
         const res = await request(app)
             .get(`/profile/publisher/${EXISTING_PUBLISHER_ID}`)
             .set("Authorization", AUTHORIZATION_HEADER_U);
@@ -77,5 +76,8 @@ describe("GET /profile/publisher/:userID", () => {
     });
 
 })
+
+
+
 
     

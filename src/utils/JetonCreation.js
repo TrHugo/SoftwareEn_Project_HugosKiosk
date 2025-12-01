@@ -28,7 +28,7 @@ export const login = async (req, res, next) => {
                 userId: user._id, 
                 Type: user.role 
             },
-            Jeton_secret_code,
+            JETON_CODE,
             { expiresIn: JWT_EXPIRATION }
         );
 
