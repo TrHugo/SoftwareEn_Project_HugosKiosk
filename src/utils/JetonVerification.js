@@ -25,7 +25,7 @@ export const checkRole = (requiredRoles) => {
     return (req, res, next) => {
        
         if (!req.userType || !requiredRoles) {
-            const err = new Error("No type of user found");
+            const err = new Error("No role found");
             err.status = 500;
             return next(err);
         }

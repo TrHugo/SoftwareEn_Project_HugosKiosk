@@ -1,4 +1,5 @@
-import { describe, it, expect, vi } from "vitest"; 
+import { describe, it, expect, vi } from "vitest";
+import { user_profile_access, publisher_profile_access } from '../../src/utils/constant.js'
 import {VALID_TEST_TOKEN_U, TEST_TOKEN_NO_DATA, FALSE_TEST_TOKEN} from '../function/token_test.js'
 import { checkUser, checkRole } from "../../src/utils/JetonVerification.js";
 
@@ -6,16 +7,16 @@ const AUTHORIZATION_HEADER = `Bearer ${VALID_TEST_TOKEN_U}`
 const AUTHORIZATION_HEADER_ND = `Bearer ${TEST_TOKEN_NO_DATA}`
 const AUTHORIZATION_HEADER_FALSE = `Bearer ${FALSE_TEST_TOKEN}`
 
-function makeReq(authorizationValue) {
+function makeReq(authorizationValue, data, type) {
     return {
         headers: { authorization: authorizationValue},
-        userData: 0,
-        userType: "",
+        userData: data,
+        userType: type,
     }; 
 }
 describe("checkUser", () => {
     it("Verifying the user from the header of the jsp token and getting the userID and userType", () => {
-        let req = makeReq(AUTHORIZATION_HEADER);
+        let req = makeReq(AUTHORIZATION_HEADER,0,"");
         let next = vi.fn(); 
         checkUser(req, {}, next);
 
@@ -25,7 +26,7 @@ describe("checkUser", () => {
       });
 
     it("Getting a wrong token", () => {
-        let req = makeReq(AUTHORIZATION_HEADER_FALSE);
+        let req = makeReq(AUTHORIZATION_HEADER_FALSE,0,"");
         let next = vi.fn(); 
         checkUser(req, {}, next);
 
@@ -38,7 +39,7 @@ describe("checkUser", () => {
     });
 
     it("Good token but no information", () => {
-        let req = makeReq(AUTHORIZATION_HEADER_ND);
+        let req = makeReq(AUTHORIZATION_HEADER_ND,0,"");
         let next = vi.fn(); 
         checkUser(req, {}, next);
 
@@ -49,5 +50,42 @@ describe("checkUser", () => {
         expect(error.status).toBe(401);
         expect(req.userData).toEqual(0)
     });
+})
 
+describe("checkRole", () => {
+
+    it("If the user is of the right type", () => {
+        let req = makeReq(AUTHORIZATION_HEADER,1,"user");
+        let next = vi.fn(); 
+        const roleTest = checkRole(user_profile_access);
+        roleTest(req, {},next)
+        
+        expect(next).toHaveBeenCalledTimes(1);
+      });
+
+      it("If the user if of the wrong type", () => {
+        let req = makeReq(AUTHORIZATION_HEADER,1,"user");
+        let next = vi.fn(); 
+        const roleTest = checkRole(publisher_profile_access);
+        roleTest(req,{},next)
+        
+        let error = next.mock.calls[0][0];
+        expect(next).toHaveBeenCalledTimes(1);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.status).toBe(403);
+        expect(error.message).toEqual("Access Forbidden");
+      });
+
+      it("if the type information is not here", () => {
+        let req = makeReq(AUTHORIZATION_HEADER,0,"");
+        let next = vi.fn(); 
+        const roleTest = checkRole(user_profile_access);
+        roleTest(req,{},next)
+        
+        let error = next.mock.calls[0][0];
+        expect(next).toHaveBeenCalledTimes(1);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.status).toBe(500);
+        expect(error.message).toEqual("No role found");
+      });
 })
