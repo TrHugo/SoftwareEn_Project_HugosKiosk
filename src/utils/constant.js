@@ -17,6 +17,12 @@ export const articles = [
 export const clients = [
     {
         id: 1,
+        name: 'test',
+        email: "test@example.fr",
+        mdp: "test_mdp"
+    },
+    {
+        id: 2,
         name: 'Leo',
         email: "test@example.com",
         mdp: "test"

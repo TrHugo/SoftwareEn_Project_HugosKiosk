@@ -14,7 +14,9 @@ function makeReq(authorizationValue, data, type) {
         userType: type,
     }; 
 }
+
 describe("checkUser", () => {
+
     it("Verifying the user from the header of the jsp token and getting the userID and userType", () => {
         let req = makeReq(AUTHORIZATION_HEADER,0,"");
         let next = vi.fn(); 
