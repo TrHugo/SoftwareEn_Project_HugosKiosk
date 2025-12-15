@@ -24,7 +24,7 @@ router.get('/article/:articleId',checkUser, (req, res, next) => {
         });
     } else {
         const err = new Error("No Article found");
-        err.status = 404; 
+        err.status = 404;
         return next(err);
     }
 });
