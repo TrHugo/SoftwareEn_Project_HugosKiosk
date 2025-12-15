@@ -19,7 +19,7 @@ const require = createRequire(import.meta.url)
 const app = express();
 
 // Simple root + health endpoints
-app.get("/", (_req, res) => res.json({ ok: true, message: "Hello from CI/CD demo 👋" }));
+app.get("/api", (_req, res) => res.json({ ok: true, message: "Hello from CI/CD demo 👋" }));
 app.get("/health", (_req, res) => res.status(200).send("OK"));
 
 // Auto-mount all routers placed under src/routes/auto
@@ -30,7 +30,7 @@ if (fs.existsSync(autoDir)) {
     const full = path.join(autoDir, f);
     const mod = await import(pathToFileURL(full).href);
     const router = mod.default;
-    if (router) app.use("/", router);
+    if (router) app.use("/api", router);
   }
 }
 
