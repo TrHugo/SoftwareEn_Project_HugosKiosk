@@ -1,0 +1,134 @@
+[
+  {
+    "id": 1,
+    "publisher_id": 1,
+    "title": "Introduction à Express",
+    "content": "Ceci est l'article d'introduction à Express et à sa structure modulaire."
+  },
+  {
+    "id": 2,
+    "publisher_id": 1,
+    "title": "Comprendre les Promises en JS",
+    "content": "Async/Await n'aura plus de secret pour vous après ce tutoriel complet."
+  },
+  {
+    "id": 3,
+    "publisher_id": 2,
+    "title": "Docker pour les nuls",
+    "content": "Conteneuriser votre première application Node.js en moins de 10 minutes."
+  },
+  {
+    "id": 4,
+    "publisher_id": 2,
+    "title": "Sécurité : OWASP Top 10",
+    "content": "Les failles de sécurité les plus courantes et comment s'en prémunir."
+  },
+  {
+    "id": 5,
+    "publisher_id": 5,
+    "title": "Architecture Microservices",
+    "content": "Quand faut-il passer du monolithe aux microservices ? Analyse coût/bénéfice."
+  },
+  {
+    "id": 100,
+    "publisher_id": 10,
+    "title": "Grève SNCF : Le trafic paralysé",
+    "content": "Les syndicats annoncent un mouvement illimité à partir de mardi prochain."
+  },
+  {
+    "id": 101,
+    "publisher_id": 10,
+    "title": "Élections US : Les sondages s'affolent",
+    "content": "Le candidat républicain prend une avance inattendue dans les Swing States."
+  },
+  {
+    "id": 102,
+    "publisher_id": 12,
+    "title": "Bourse : Le CAC40 dévisse",
+    "content": "L'inflation américaine pèse lourdement sur les marchés européens ce matin."
+  },
+  {
+    "id": 103,
+    "publisher_id": 15,
+    "title": "Canicule : 40°C attendus à Lyon",
+    "content": "Météo France place 15 départements en vigilance rouge pour la semaine."
+  },
+  {
+    "id": 104,
+    "publisher_id": 15,
+    "title": "Technologie : Apple dévoile l'iPhone 16",
+    "content": "Peu de nouveautés mais un prix toujours plus élevé. Notre analyse."
+  },
+  {
+    "id": 200,
+    "publisher_id": 20,
+    "title": "Ligue 1 : L'OM en crise",
+    "content": "Après une troisième défaite consécutive, l'entraîneur est sur la sellette."
+  },
+  {
+    "id": 201,
+    "publisher_id": 20,
+    "title": "Tennis : Nadal annonce sa retraite",
+    "content": "Le roi de la terre battue rangera sa raquette après le prochain Roland-Garros."
+  },
+  {
+    "id": 202,
+    "publisher_id": 22,
+    "title": "F1 : Verstappen intouchable",
+    "content": "Nouvelle pôle position pour le néerlandais qui écrase la concurrence."
+  },
+  {
+    "id": 203,
+    "publisher_id": 25,
+    "title": "Rugby : Le XV de France impressionne",
+    "content": "Une victoire historique contre les All Blacks en ouverture du tournoi."
+  },
+  {
+    "id": 600,
+    "publisher_id": 69,
+    "title": "Confessions intimes : J'ai couché avec mon patron",
+    "content": "Sophie, 24 ans, raconte comment une soirée d'entreprise a dérapé dans le bureau du PDG."
+  },
+  {
+    "id": 601,
+    "publisher_id": 69,
+    "title": "Les 10 positions du Kamasutra pour l'hiver",
+    "content": "Réchauffez vos nuits glaciales avec ces techniques acrobatiques réservées aux initiés."
+  },
+  {
+    "id": 602,
+    "publisher_id": 69,
+    "title": "Scandale : La vidéo volée de cette star de télé-réalité",
+    "content": "Des images compromettantes circulent sur Telegram. On vous dit tout ce qu'on sait."
+  },
+  {
+    "id": 603,
+    "publisher_id": 69,
+    "title": "Nuits Chaudes : Enquête dans un club échangiste",
+    "content": "Notre journaliste a infiltré le club le plus sélect de Paris. Masques, cuir et volupté au programme."
+  },
+  {
+    "id": 604,
+    "publisher_id": 69,
+    "title": "Fait divers : Le dépeceur de la Forêt Noire",
+    "content": "Récit glaçant des crimes commis par celui que la presse surnomme le boucher bavarois. Ames sensibles s'abstenir."
+  },
+  {
+    "id": 605,
+    "publisher_id": 69,
+    "title": "Tinder : Il droguait ses conquêtes",
+    "content": "Le mode opératoire terrifiant du prédateur des applications de rencontre enfin dévoilé par la police."
+  },
+  {
+    "id": 606,
+    "publisher_id": 69,
+    "title": "OnlyFans : Cette étudiante gagne 50k/mois",
+    "content": "Elle a quitté la fac de droit pour vendre ses photos de pieds et de lingerie. Elle nous montre ses relevés de compte."
+  },
+  {
+    "id": 607,
+    "publisher_id": 69,
+    "title": "Infidélité : Les signes qui ne trompent pas",
+    "content": "Votre mari rentre tard ? Il cache son téléphone ? Voici comment installer un logiciel espion indétectable."
+  }
+]
