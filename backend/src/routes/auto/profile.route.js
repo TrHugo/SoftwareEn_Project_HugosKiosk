@@ -1,13 +1,19 @@
 import { Router } from "express";
 import { checkUser, checkRole} from '../../utils/JetonVerification.js';
-import { publisher_profile_access, user_profile_access } from "../../utils/constant.js";
+import { publisher_profile_access, user_profile_access, publishers, clients } from "../../utils/constant.js";
 
 const router = Router();
 
 router.get('/profile/publisher/:userID', checkUser, checkRole(publisher_profile_access), (req, res, next) =>{
     const publisherId = parseInt(req.params.userID, 10);
 
-    if (req.userData.userId!=publisherId)
+     if (isNaN(publisherId)) {
+        const err = new Error("Publisher ID incorrect");
+        err.status = 400;   //A verifier
+        return next(err);
+    }
+
+    if (parseInt(req.userData.userId,10)!=publisherId)
     {
         const err = new Error("Access refused");
         err.status = 403; 
@@ -20,7 +26,7 @@ router.get('/profile/publisher/:userID', checkUser, checkRole(publisher_profile_
     if (publisher) {
         res.status(200).json({
             success: true,
-            article: publisher
+            info: publisher
         });
     }
     else {
@@ -30,9 +36,16 @@ router.get('/profile/publisher/:userID', checkUser, checkRole(publisher_profile_
     }
 });
 router.get('/profile/user/:userID', checkUser, checkRole(user_profile_access), (req, res, next) =>{
-const userId = parseInt(req.params.userID, 10);
+    const userId = parseInt(req.params.userID, 10);
 
-    if (req.userData.userId!=userId)
+
+    if (isNaN(userId)) {
+        const err = new Error("User ID incorrect");
+        err.status = 400;   //A verifier
+        return next(err);
+    }
+
+    if (parseInt(req.userData.userId,10)!=userId)
     {
         const err = new Error("Access refused");
         err.status = 403; 
@@ -40,12 +53,12 @@ const userId = parseInt(req.params.userID, 10);
     }
 
     // A remplacer avec recherche dans database
-    const user = users.find(a => a.id === userId);
+    const user = clients.find(a => a.id === userId);
 
     if (user) {
-        res.json({
+        res.status(200).json({
             success: true,
-            article: user
+            info: user
         });
     }
     else {
