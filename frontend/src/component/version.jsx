@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-export default function Info() {
-    const [infoData, setInfoData] = useState(null);
+export default function Version() {
+    const [VersionData, setVersionData] = useState(null);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchInfo = async () => {
             try {
-                const response = await fetch('/api/info'); 
+                const response = await fetch('/api/version'); 
                 
                 if (!response.ok) {
                     throw new Error(`Erreur HTTP: ${response.status}`);
@@ -15,7 +15,7 @@ export default function Info() {
 
                 const data = await response.json();
                 
-                setInfoData(data);
+                setVersionData(data);
             } catch (err) {
                 console.error("Error:", err);
                 setError(err.message);
@@ -32,16 +32,13 @@ export default function Info() {
 
     return (
         <div>
-            <h2>Informations du Backend</h2>
-            {infoData && (
+            <h2>Version</h2>
+            {VersionData && (
                 <ul>
-                    <li><strong>Nom de l'App :</strong> {infoData.name}</li>
-                    <li><strong>Version :</strong> {infoData.version}</li>
-                    <li><strong>Node.js Version :</strong> {infoData.node}</li>
-                    <li><strong>Uptime (Temps d'activité) :</strong> {infoData.uptime}</li>
+                    <strong>Nom de l'App :</strong> {VersionData.version}
                 </ul>
             )}
-            {!infoData && <p>Aucune donnée disponible.</p>}
+            {!VersionData && <p>Aucune donnée disponible.</p>}
         </div>
     );
 }
