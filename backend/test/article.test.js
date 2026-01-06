@@ -1,12 +1,21 @@
 import request from "supertest";
+import { vi, describe, it, expect, beforeEach } from "vitest"; 
+vi.mock("../src/controllers/article.controller.js", () => ({
+  getArticleById: vi.fn()
+}));
 import app from "../src/app.js"; 
-import { describe, it, expect } from "vitest"; 
 import {VALID_TEST_TOKEN_U} from './function/token_test.js'
+import { getArticleById } from "../src/controllers/article.controller.js";
+
+beforeEach(() => {
+  getArticleById.mockReset();
+});
 
 const AUTHORIZATION_HEADER = `Bearer ${VALID_TEST_TOKEN_U}`;
 const INVALID_AUTHORIZATION_HEADER = `Bearer invalid.token.12345`;
 const EXISTING_ARTICLE_ID = 1; 
 const NON_EXISTING_ARTICLE_ID = 9999;
+
 
 describe("GET /article/:articleId", () => {
     it("401 if missing token", async () => {
@@ -27,6 +36,7 @@ describe("GET /article/:articleId", () => {
     });
 
     it("200 with valid token and valid article", async () => {
+        getArticleById.mockResolvedValue({ id: EXISTING_ARTICLE_ID, title: "Titre", content: "Text" });
         const res = await request(app)
             .get(`/article/${EXISTING_ARTICLE_ID}`)
             .set("Authorization", AUTHORIZATION_HEADER); 
