@@ -11,19 +11,19 @@ function makeReq(authorizationValue, data, type) {
     return {
         headers: { authorization: authorizationValue},
         userData: data,
-        userType: type,
+        userRole: type,
     }; 
 }
 
 describe("checkUser", () => {
 
-    it("Verifying the user from the header of the jsp token and getting the userID and userType", () => {
+    it("Verifying the user from the header of the jsp token and getting the userID and userRole", () => {
         let req = makeReq(AUTHORIZATION_HEADER,0,"");
         let next = vi.fn(); 
         checkUser(req, {}, next);
 
-        expect(req.userData).toEqual({ userId: 1 });
-        expect(req.userType).toEqual({ userType: 'user' });
+        expect(req.userId).toEqual('1');
+        expect(req.userRole).toEqual('user');
         expect(next).toHaveBeenCalledTimes(1);
       });
 
