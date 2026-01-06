@@ -65,6 +65,19 @@ describe("GET /article/:articleId", () => {
         expect(res.body.message).toBe("No Article found");
     });
 
+    it("500 if controller throws an error", async () => {
+        getArticleById.mockRejectedValue(new Error("boom"));
+
+        const res = await request(app)
+            .get(`/article/${EXISTING_ARTICLE_ID}`)
+            .set("Authorization", AUTHORIZATION_HEADER);
+
+        expect(res.status).toBe(500);
+        expect(res.body.error).toBe(true);
+        expect(typeof res.body.message).toBe("string");
+        expect(res.body.message).toBe("boom");
+    });
+
 })
 
     
