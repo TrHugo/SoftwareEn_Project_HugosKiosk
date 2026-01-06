@@ -5,6 +5,7 @@ export const getArticleById = async (articleId) => {
     const article = await Article.findById(articleId).lean();
     return article;
   } catch (err) {
+    if (err.name === "CastError") return null;
     throw err;
   } 
 };

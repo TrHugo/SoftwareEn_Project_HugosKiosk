@@ -28,7 +28,7 @@ if (fs.existsSync(autoDir)) {
     const full = path.join(autoDir, f);
     const mod = await import(pathToFileURL(full).href);
     const router = mod.default;
-    if (router) app.use("/api", router);
+    if (router) app.use(router);
   }
 }
 

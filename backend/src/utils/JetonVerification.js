@@ -3,11 +3,7 @@ import jwt from 'jsonwebtoken';
 
 export const checkUser = (req, res, next) => {
     try {
-        if (!req.headers.authorization) {
-            const err = new Error("No authorization header found.");
-            err.status = 401;
-            return next(err);
-        }
+        
         const token = req.headers.authorization.split(" ")[1]; 
         const decodedToken = jwt.verify(token, JETON_CODE);
         if (!decodedToken.Id || !decodedToken.Type) {
