@@ -1,32 +1,30 @@
+import dotenv from "dotenv";
 import jwt from 'jsonwebtoken'
-import { JETON_CODE, JWT_EXPIRATION, clients} from '../utils/constant.js';
+import { JWT_EXPIRATION} from '../utils/constant.js';
+import { comparePassword } from "../utils/passwordHash.js";
+import { getUserByEmailAndMail } from '../controllers/user.controller.js';
 
+dotenv.config();
 
-export const login = async (req, res, next) => {
-    const { email, password } = req.body;
-    if (email==undefined || password==undefined)
+export async function login(req, res, next) {
+    const { name, email, password } = req.body;
+    if (name==undefined || email==undefined || password==undefined)
     {
         const err = new Error("POST error");
-        err.status = 500; 
+        err.status = 400; 
         return next(err);
     }
     try {
- 
-        const user = clients.find(a => a.email === email);
-        //const user = await clients.findOne({ email });
- 
+
+        const user = await getUserByEmailAndMail(name, email);
+
         if (!user) {
             const err = new Error("E-mail ou mot de passe incorrect.");
             err.status = 401; 
             return next(err);
         }
 
-        //const isPasswordValid = await bcrypt.compare(password, user.mdp);
-
-        let isPasswordValid = true
-        if (password == "test"){
-            isPasswordValid = false;
-        }
+        const isPasswordValid = await comparePassword(password, user.mdp);
 
         if (!isPasswordValid) {
             const err = new Error("E-mail ou mot de passe incorrect.");
@@ -34,18 +32,18 @@ export const login = async (req, res, next) => {
             return next(err);
         }
 
-        const token = jwt.sign( 
-            { 
-                userId: user.id, 
-                Type: user.role 
+        const token = jwt.sign(
+            {
+                userId: user._id,
+                role: user.role
             },
-            JETON_CODE,
+            process.env.JETON_CODE,
             { expiresIn: JWT_EXPIRATION }
         );
 
         res.status(200).json({
             message: "Connexion réussie",
-            token: token
+            token
         });
 
     } catch (error) {
@@ -53,4 +51,4 @@ export const login = async (req, res, next) => {
         error.status = error.status || 500;
         next(error);
     }
-};
+}

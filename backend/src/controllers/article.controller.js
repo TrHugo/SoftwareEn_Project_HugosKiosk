@@ -1,6 +1,6 @@
 import Article from "../models/article.model.js";
 
-export const getArticleById = async (articleId) => {
+export async function getArticleById(articleId) {
   try {
     const article = await Article.findById(articleId).lean();
     return article;
@@ -8,7 +8,7 @@ export const getArticleById = async (articleId) => {
     if (err.name === "CastError") return null;
     throw err;
   } 
-};
+}
 export async function getArticlesNameAndIDByPublisher (publisherId) {
   try {
     const articles = await Article.find({ publisher: publisherId }, 'title _id').lean();
