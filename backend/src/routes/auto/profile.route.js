@@ -5,15 +5,15 @@ import { publisher_profile_access, user_profile_access, publishers, clients } fr
 const router = Router();
 
 router.get('/profile/publisher/:userID', checkUser, checkRole(publisher_profile_access), (req, res, next) =>{
-    const publisherId = parseInt(req.params.userID, 10);
+    const publisherId = req.params.userID;
 
      if (isNaN(publisherId)) {
         const err = new Error("Publisher ID incorrect");
-        err.status = 400;   //A verifier
+        err.status = 400;   
         return next(err);
     }
 
-    if (parseInt(req.userData.userId,10)!=publisherId)
+    if (req.userData.userId != publisherId)
     {
         const err = new Error("Access refused");
         err.status = 403; 
@@ -36,16 +36,16 @@ router.get('/profile/publisher/:userID', checkUser, checkRole(publisher_profile_
     }
 });
 router.get('/profile/user/:userID', checkUser, checkRole(user_profile_access), (req, res, next) =>{
-    const userId = parseInt(req.params.userID, 10);
+    const userId = req.params.userID;
 
 
     if (isNaN(userId)) {
         const err = new Error("User ID incorrect");
-        err.status = 400;   //A verifier
+        err.status = 400;   
         return next(err);
     }
 
-    if (parseInt(req.userData.userId,10)!=userId)
+    if (req.userData.userId != userId)
     {
         const err = new Error("Access refused");
         err.status = 403; 
