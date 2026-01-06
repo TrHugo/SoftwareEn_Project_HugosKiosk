@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach} from 'vitest';
 import * as articleController from '../../src/controllers/article.controller.js';
 import Article from '../../src/models/article.model.js';
 
