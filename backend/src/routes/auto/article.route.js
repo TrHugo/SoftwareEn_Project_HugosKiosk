@@ -1,31 +1,33 @@
-import { articles } from "../../utils/constant.js";
 import { checkUser} from '../../utils/JetonVerification.js';
+import { getArticleById } from "../../controllers/article.controller.js";
 import { Router } from "express";
 
 const router = Router();
 
+router.get('/article/:articleId',checkUser, async (req, res, next) => {
+    try {
+        const articleId = req.params.articleId;
 
-router.get('/article/:articleId',checkUser, (req, res, next) => {
-    const articleId = parseInt(req.params.articleId, 10);
-
-    if (isNaN(articleId)) {
+        if (isNaN(articleId)) {
         const err = new Error("Article ID incorrect");
-        err.status = 400;   //A verifier
+        err.status = 400;   
         return next(err);
-    }
-    
-    // A remplacer avec recherche dans database
-    const article = articles.find(a => a.id === articleId);
+        }
 
-    if (article) {
-        res.status(200).json({
-            success: true,
-            article: article
-        });
-    } else {
-        const err = new Error("No Article found");
-        err.status = 404;
-        return next(err);
+        const article = await getArticleById(articleId);
+
+        if (article) {
+            res.status(200).json({
+                success: true,
+                article: article
+            });
+        } else {
+            const err = new Error("Article not found found");
+            err.status = 404;
+            return next(err);
+        }
+    } catch (err) {
+        next(err);
     }
 });
 

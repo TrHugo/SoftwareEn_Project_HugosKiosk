@@ -10,7 +10,7 @@ export const getArticleById = async (articleId) => {
 };
 export async function getArticlesNameAndIDByPublisher (publisherId) {
   try {
-    const articles = await Article.find({ publisher: publisherId }, 'title id').lean();
+    const articles = await Article.find({ publisher: publisherId }, 'title _id').lean();
     return articles;
   } catch (err) {
     throw err;
