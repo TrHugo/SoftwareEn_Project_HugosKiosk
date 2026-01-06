@@ -22,7 +22,7 @@ router.get('/article/:articleId',checkUser, async (req, res, next) => {
                 article: article
             });
         } else {
-            const err = new Error("Article not found found");
+            const err = new Error("Article not found");
             err.status = 404;
             return next(err);
         }
