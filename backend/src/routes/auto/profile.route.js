@@ -1,27 +1,28 @@
 import { Router } from "express";
 import { checkUser, checkRole} from '../../utils/JetonVerification.js';
-import { publisher_profile_access, user_profile_access, publishers, clients } from "../../utils/constant.js";
+import { publisher_profile_access, user_profile_access} from "../../utils/constant.js";
+import { getUserById } from "../../controllers/user.controller.js";
 
 const router = Router();
 
-router.get('/profile/publisher/:userID', checkUser, checkRole(publisher_profile_access), (req, res, next) =>{
-    const publisherId = req.params.userID;
+router.get('/profile/publisher/:userID', checkUser, checkRole(publisher_profile_access), async (req, res, next) =>{
+    const publisherId = String(req.params.userID);
 
-     if (isNaN(publisherId)) {
+     if (isNaN(Number(publisherId))) {
         const err = new Error("Publisher ID incorrect");
         err.status = 400;   
         return next(err);
     }
 
-    if (req.userData.userId != publisherId)
+    if (req.userId !== publisherId)
     {
         const err = new Error("Access refused");
         err.status = 403; 
         return next(err);
     }
 
-    // A remplacer avec recherche dans database
-    const publisher = publishers.find(a => a.id === publisherId);
+
+    const publisher = await getUserById(publisherId);
 
     if (publisher) {
         res.status(200).json({
@@ -35,25 +36,24 @@ router.get('/profile/publisher/:userID', checkUser, checkRole(publisher_profile_
         return next(err);
     }
 });
-router.get('/profile/user/:userID', checkUser, checkRole(user_profile_access), (req, res, next) =>{
-    const userId = req.params.userID;
+router.get('/profile/user/:userID', checkUser, checkRole(user_profile_access), async (req, res, next) =>{
+    const userId = String(req.params.userID);
 
 
-    if (isNaN(userId)) {
+    if (isNaN(Number(userId))) {
         const err = new Error("User ID incorrect");
         err.status = 400;   
         return next(err);
     }
 
-    if (req.userData.userId != userId)
+    if (req.userId != userId)
     {
         const err = new Error("Access refused");
         err.status = 403; 
         return next(err);
     }
 
-    // A remplacer avec recherche dans database
-    const user = clients.find(a => a.id === userId);
+    const user = await getUserById(userId);
 
     if (user) {
         res.status(200).json({

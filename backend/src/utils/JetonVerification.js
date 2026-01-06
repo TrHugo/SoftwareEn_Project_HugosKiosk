@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-
 const JETON_CODE = process.env.JETON_CODE;
 
 export const checkUser = (req, res, next) => {
@@ -9,7 +8,8 @@ export const checkUser = (req, res, next) => {
         }
 
         const token = req.headers.authorization.split(" ")[1]; 
-        const decodedToken = jwt.verify(token, JETON_CODE);
+        let decodedToken = jwt.verify(token, JETON_CODE);
+
         if (decodedToken.Id === undefined || decodedToken.Type === undefined) {
             throw new Error("Missing essential user data in token.");
         }

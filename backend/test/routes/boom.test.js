@@ -3,8 +3,8 @@
  * Ensures global error handler shapes the response.
  */
 import request from "supertest";
-import app from "../../src/app.js";
 import { describe, it, expect } from "vitest";
+import app from "../../src/app.js";
 
 describe("GET /boom", () => {
   it("returns 500 with error payload", async () => {

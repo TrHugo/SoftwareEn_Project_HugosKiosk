@@ -1,7 +1,8 @@
 import request from "supertest";
-import app from "../../src/app.js"; 
-import { describe, it, expect } from "vitest"; 
+import { vi, describe, it, expect } from "vitest"; 
 import {VALID_TEST_TOKEN_U, VALID_TEST_TOKEN_MU, VALID_TEST_TOKEN_P} from '../function/token_test.js'
+import app from "../../src/app.js"; 
+import * as userController from '../../src/controllers/user.controller.js';
 
 const AUTHORIZATION_HEADER_U = `Bearer ${VALID_TEST_TOKEN_U}`;
 const AUTHORIZATION_HEADER_MU = `Bearer ${VALID_TEST_TOKEN_MU}`;
@@ -13,7 +14,7 @@ const WRONG_ID = 999
 describe("GET /profile/user/:userID", () => {
     it("401 if missing token", async () => {
         const res = await request(app)
-            .get(`/profile/publisher/${EXISTING_PUBLISHER_ID}`);
+            .get(`/profile/user/${EXISTING_PUBLISHER_ID}`);
 
         expect(res.status).toBe(401);
         expect(res.body.message).toBe("Failed Authentification. Access refused");
@@ -29,6 +30,7 @@ describe("GET /profile/user/:userID", () => {
     });
 
     it("200 with valid token and valid user", async () => {
+        vi.spyOn(userController, 'getUserById').mockResolvedValue({ id: EXISTING_PUBLISHER_ID, name: 'test', email: 'test@example.fr' });
         const res = await request(app)
             .get(`/profile/user/${EXISTING_PUBLISHER_ID}`)
             .set("Authorization", AUTHORIZATION_HEADER_U); 
@@ -49,6 +51,7 @@ describe("GET /profile/user/:userID", () => {
     });
 
     it("404 with valid token if user not found", async () => {
+        vi.spyOn(userController, 'getUserById').mockResolvedValue(null);
         const res = await request(app)
             .get(`/profile/user/${WRONG_ID}`)
             .set("Authorization", AUTHORIZATION_HEADER_MU);

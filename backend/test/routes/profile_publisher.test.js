@@ -1,7 +1,8 @@
 import request from "supertest";
-import app from "../../src/app.js"; 
-import { describe, it, expect } from "vitest"; 
+import {  vi, describe, it, expect, beforeEach} from "vitest"; 
 import {VALID_TEST_TOKEN_U, VALID_TEST_TOKEN_P, VALID_TEST_TOKEN_MP} from '../function/token_test.js'
+import app from "../../src/app.js"; 
+import * as userController from '../../src/controllers/user.controller.js';
 
 const AUTHORIZATION_HEADER_U = `Bearer ${VALID_TEST_TOKEN_U}`;
 const AUTHORIZATION_HEADER_P = `Bearer ${VALID_TEST_TOKEN_P}`;
@@ -10,7 +11,10 @@ const INVALID_AUTHORIZATION_HEADER = `Bearer invalid.token.12345`;
 const EXISTING_PUBLISHER_ID = 1
 const WRONG_ID = 999
 
+beforeEach(() => vi.restoreAllMocks());
+
 describe("GET /profile/publisher/:userID", () => {
+
     it("401 if missing token", async () => {
         const res = await request(app)
             .get(`/profile/publisher/${EXISTING_PUBLISHER_ID}`);
@@ -29,6 +33,7 @@ describe("GET /profile/publisher/:userID", () => {
     });
 
     it("200 with valid token and valid publisher", async () => {
+        vi.spyOn(userController, 'getUserById').mockResolvedValue({ id: EXISTING_PUBLISHER_ID, name: 'pub' });
         const res = await request(app)
             .get(`/profile/publisher/${EXISTING_PUBLISHER_ID}`)
             .set("Authorization", AUTHORIZATION_HEADER_P); 
@@ -49,6 +54,7 @@ describe("GET /profile/publisher/:userID", () => {
     });
 
     it("404 with valid token if publisher not found", async () => {
+        vi.spyOn(userController, 'getUserById').mockResolvedValue(null);
         const res = await request(app)
             .get(`/profile/publisher/${WRONG_ID}`)
             .set("Authorization", AUTHORIZATION_HEADER_MP);

@@ -3,8 +3,8 @@
  * Focus: HTTP behavior & payload shape.
  */
 import request from "supertest";
-import app from "../../src/app.js";
 import { describe, it, expect } from "vitest";
+import app from "../../src/app.js";
 
 describe("GET /version", () => {
   it("returns package version as a non-empty string", async () => {
