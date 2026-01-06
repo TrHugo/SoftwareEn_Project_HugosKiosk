@@ -1,14 +1,15 @@
 import User from "../models/user.model.js"; 
 import { hashPassword } from "../utils/passwordHash.js";
 
-export const getUserById = async (userId) => {
+export async function getUserById(userId) {
     try {
         const user = await User.findById(userId).exec();
         return user;
     } catch (error) {
+        if (error.name === "CastError") return null;
         throw error;
     }
-};
+}
 
 export async function getUserByEmailAndMail(name, email) {
     try {

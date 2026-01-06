@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
-import {JETON_CODE} from '../../src/utils/constant.js'
+import dotenv from "dotenv";
+dotenv.config();
+const JETON_CODE = process.env.JETON_CODE || 'test_jwt_code';
 
 const token_u = jwt.sign(
     { Id: 1, Type: "user" },

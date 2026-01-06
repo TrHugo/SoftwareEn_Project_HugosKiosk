@@ -1,11 +1,11 @@
 import request from "supertest";
 import { vi, describe, it, expect, beforeEach } from "vitest"; 
-vi.mock("../src/controllers/article.controller.js", () => ({
+vi.mock("../../src/controllers/article.controller.js", () => ({
   getArticleById: vi.fn()
 }));
-import app from "../src/app.js"; 
-import {VALID_TEST_TOKEN_U} from './function/token_test.js'
-import { getArticleById } from "../src/controllers/article.controller.js";
+import app from "../../src/app.js"; 
+import {VALID_TEST_TOKEN_U} from '../function/token_test.js'
+import { getArticleById } from "../../src/controllers/article.controller.js";
 
 beforeEach(() => {
   getArticleById.mockReset();

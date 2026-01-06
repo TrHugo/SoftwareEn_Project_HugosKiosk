@@ -1,7 +1,7 @@
 import request from "supertest";
-import app from "../src/app.js"; 
+import app from "../../src/app.js"; 
 import { describe, it, expect } from "vitest"; 
-import {VALID_TEST_TOKEN_U, VALID_TEST_TOKEN_P, VALID_TEST_TOKEN_MP} from './function/token_test.js'
+import {VALID_TEST_TOKEN_U, VALID_TEST_TOKEN_P, VALID_TEST_TOKEN_MP} from '../function/token_test.js'
 
 const AUTHORIZATION_HEADER_U = `Bearer ${VALID_TEST_TOKEN_U}`;
 const AUTHORIZATION_HEADER_P = `Bearer ${VALID_TEST_TOKEN_P}`;
