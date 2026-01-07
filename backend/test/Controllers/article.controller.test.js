@@ -9,25 +9,25 @@ beforeEach(() => {
 describe('article.controller', () => {
   describe('getArticleById', () => {
     it('returns article when found', async () => {
-      const article = { _id: '1', title: 't', content: 'c' };
-      Article.findById = vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(article) });
+      const article = { id: '1', title: 't', content: 'c' };
+      Article.findOne = vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(article) });
 
       const res = await articleController.getArticleById('1');
       expect(res).toEqual(article);
-      expect(Article.findById).toHaveBeenCalledWith('1');
+      expect(Article.findOne).toHaveBeenCalledWith({ id: '1' });
     });
 
     it('returns null on CastError', async () => {
       const err = new Error('Cast');
       err.name = 'CastError';
-      Article.findById = vi.fn().mockReturnValue({ lean: vi.fn().mockRejectedValue(err) });
+      Article.findOne = vi.fn().mockReturnValue({ lean: vi.fn().mockRejectedValue(err) });
 
       const res = await articleController.getArticleById('invalid');
       expect(res).toBeNull();
     });
 
     it('throws other errors', async () => {
-      Article.findById = vi.fn().mockReturnValue({ lean: vi.fn().mockRejectedValue(new Error('boom')) });
+      Article.findOne = vi.fn().mockReturnValue({ lean: vi.fn().mockRejectedValue(new Error('boom')) });
 
       await expect(articleController.getArticleById('1')).rejects.toThrow('boom');
     });
@@ -35,7 +35,7 @@ describe('article.controller', () => {
 
   describe('getArticlesNameAndIDByPublisher', () => {
     it('returns list of articles for publisher', async () => {
-      const articles = [{ _id: '1', title: 'A' }, { _id: '2', title: 'B' }];
+      const articles = [{ id: '1', title: 'A' }, { id: '2', title: 'B' }];
       Article.find = vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(articles) });
 
       const res = await articleController.getArticlesNameAndIDByPublisher('pub1');
@@ -64,6 +64,8 @@ describe('article.controller', () => {
     it('creates article and returns 201', async () => {
       const req = { body: { publisher: 'p', title: 't', content: 'c' } };
       const created = { _id: '1', publisher: 'p', title: 't', content: 'c' };
+
+      Article.findOne = vi.fn().mockReturnValue({sort: vi.fn().mockResolvedValue({ id: 1 }) });
       Article.create = vi.fn().mockResolvedValue(created);
 
       const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
@@ -71,7 +73,7 @@ describe('article.controller', () => {
 
       await articleController.createArticle(req, res, next);
 
-      expect(Article.create).toHaveBeenCalledWith({ publisher: 'p', title: 't', content: 'c' });
+      expect(Article.create).toHaveBeenCalledWith({ id: 2, publisher: 'p', title: 't', content: 'c' });
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith(created);
     });
@@ -79,6 +81,8 @@ describe('article.controller', () => {
     it('calls next with error if create throws', async () => {
       const req = { body: { publisher: 'p', title: 't', content: 'c' } };
       const error = new Error('db fail');
+      
+      Article.findOne = vi.fn().mockReturnValue({sort: vi.fn().mockResolvedValue({ id: 1 }) });
       Article.create = vi.fn().mockRejectedValue(error);
 
       const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
@@ -91,7 +95,7 @@ describe('article.controller', () => {
 
   describe('listArticles', () => {
     it('returns list of all articles', async () => {
-      const articles = [{ _id: '1' }, { _id: '2' }];
+      const articles = [{ id: '1' }, { id: '2' }];
       Article.find = vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(articles) });
 
       const req = {};

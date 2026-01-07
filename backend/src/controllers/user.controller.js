@@ -3,7 +3,7 @@ import { hashPassword } from "../utils/passwordHash.js";
 
 export async function getUserById(userId) {
     try {
-        const user = await User.findById(userId).exec();
+        const user = await User.findOne({ id: userId }).lean();
         return user;
     } catch (error) {
         if (error.name === "CastError") return null;
@@ -22,10 +22,13 @@ export async function getUserByEmailAndMail(name, email) {
 
 export async function createUser (req, res, next) {
   try {
-    const { name, email, mdp, type } = req.body;
+    const {name, email, mdp, type } = req.body;
     if (!name || !email || !mdp || !type) {
       return res.status(400).json({ error: "All fields are required." });
     }
+
+    const lastUser = await User.findOne().sort({ id: -1 });
+    const id = lastUser ? lastUser.id + 1 : 1;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -34,7 +37,7 @@ export async function createUser (req, res, next) {
 
     const hashedMdp = await hashPassword(mdp);
 
-    const created = await User.create({ name, email, mdp: hashedMdp, type });
+    const created = await User.create({ id, name, email, mdp: hashedMdp, type });
 
     const userObj = created.toObject();
     delete userObj.mdp;

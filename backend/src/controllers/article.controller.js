@@ -2,7 +2,7 @@ import Article from "../models/article.model.js";
 
 export async function getArticleById(articleId) {
   try {
-    const article = await Article.findById(articleId).lean();
+    const article = await Article.findOne({ id: articleId }).lean();
     return article;
   } catch (err) {
     if (err.name === "CastError") return null;
@@ -24,7 +24,11 @@ export async function createArticle (req, res, next) {
     if (!publisher || !title || !content) {
       return res.status(400).json({ error: "All fields are required." });
     }
-    const created = await Article.create({ publisher, title, content });
+    
+    const lastArticle = await Article.findOne().sort({ id: -1 });
+    const id = lastArticle ? lastArticle.id + 1 : 1;
+
+    const created = await Article.create({ id, publisher, title, content });
     res.status(201).json(created);
   } catch (err) {
     next(err);
