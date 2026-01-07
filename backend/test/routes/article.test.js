@@ -1,8 +1,12 @@
 import request from "supertest";
 import { vi, describe, it, expect, beforeEach } from "vitest"; 
-vi.mock("../../src/controllers/article.controller.js", () => ({
-  getArticleById: vi.fn()
-}));
+vi.mock("../../src/controllers/article.controller.js", async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...actual,
+        getArticleById: vi.fn()
+    };
+});
 import {VALID_TEST_TOKEN_U} from '../function/token_test.js'
 import app from "../../src/app.js"; 
 import { getArticleById } from "../../src/controllers/article.controller.js";

@@ -2,9 +2,11 @@ import mongoose from "mongoose";
 
 const articleSchema = new mongoose.Schema(
   {
-    publisher_id: { type: String, required: true },
+    publisher_id: { type: Number, required: true },
     title: { type: String, required: true },
-    content: { type: String, required: true }
+    content: { type: String, required: true },
+
+    active: { type: Boolean, default: true }
   },
   { timestamps: true }
 );
