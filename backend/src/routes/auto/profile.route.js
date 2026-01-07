@@ -5,6 +5,18 @@ import { getUserById } from "../../controllers/user.controller.js";
 
 const router = Router();
 
+router.get('/profile', checkUser, async (req, res, next) => {
+    try {
+        const id = Number(req.userId);
+        const type = req.userRole;
+        res.status(200).json({ success: true, info: { id, type } });
+    } catch (error) {
+        const err = new Error("Failed to retrieve profile info");
+        err.status = 500;
+        return next(err);
+    }
+});
+
 router.get('/profile/publisher/:userID', checkUser, checkRole(publisher_profile_access), async (req, res, next) =>{
     const publisherId = String(req.params.userID);
 
@@ -97,18 +109,6 @@ router.get('/profile/admin/:userID', checkUser, checkRole(admin_profile_access),
     else {
         const err = new Error("Admin not found");
         err.status = 404;
-        return next(err);
-    }
-});
-
-router.get('/profile', checkUser, async (req, res, next) => {
-    try {
-        const id = Number(req.userId);
-        const type = req.userRole;
-        res.status(200).json({ success: true, info: { id, type } });
-    } catch (error) {
-        const err = new Error("Failed to retrieve profile info");
-        err.status = 500;
         return next(err);
     }
 });
