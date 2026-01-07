@@ -27,14 +27,23 @@ export async function createUser (req, res, next) {
       return res.status(400).json({ error: "All fields are required." });
     }
 
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ error: "Email already used" });
+    }
+
     const hashedMdp = await hashPassword(mdp);
 
     const created = await User.create({ name, email, mdp: hashedMdp, type });
 
-    const userObj = created.toObject ? created.toObject() : created;
+    const userObj = created.toObject();
     delete userObj.mdp;
 
-    res.status(201).json(userObj);
+    res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      user: userObj
+    });
   } catch (err) {
     next(err);
   }
