@@ -65,6 +65,7 @@ describe('user.controller', () => {
       const req = { body: { name: 'n', email: 'e', mdp: 'plain', type: 'user' } };
       const created = { toObject: () => ({ _id: '1', name: 'n', email: 'e', mdp: 'hash', type: 'user' }) };
 
+      User.findOne = vi.fn().mockResolvedValue(null);
       vi.spyOn(passwordHash, 'hashPassword').mockResolvedValue('hash');
       User.create = vi.fn().mockResolvedValue(created);
 
@@ -73,13 +74,15 @@ describe('user.controller', () => {
 
       await userController.createUser(req, res, next);
 
+      expect(res.status).toHaveBeenCalledWith(201);
       expect(passwordHash.hashPassword).toHaveBeenCalledWith('plain');
       expect(User.create).toHaveBeenCalledWith({ name: 'n', email: 'e', mdp: 'hash', type: 'user' });
-      expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalled();
-      const returned = res.json.mock.calls[0][0];
-      expect(returned.mdp).toBeUndefined();
-      expect(returned.email).toBe('e');
+      
+      const response = res.json.mock.calls[0][0];
+      expect(response.user.email).toBe('e'); 
+      expect(response.user.mdp).toBeUndefined();
+      expect(response.success).toBe(true);
     });
 
     it('calls next with error if create throws', async () => {
@@ -93,6 +96,24 @@ describe('user.controller', () => {
 
       await userController.createUser(req, res, next);
       expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it('returns 409 when email already exists', async () => {
+      const req = { 
+        body: { name: 'n', email: 'duplicate@test.com', mdp: 'plain', type: 'user' } 
+      };
+      User.findOne = vi.fn().mockResolvedValue({ email: 'duplicate@test.com' });
+
+      const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+      const next = vi.fn();
+
+      await userController.createUser(req, res, next);
+
+      expect(User.findOne).toHaveBeenCalledWith({ email: 'duplicate@test.com' });
+      expect(res.status).toHaveBeenCalledWith(409); 
+      expect(res.json).toHaveBeenCalledWith({ error: "Email already used" });
+  
+      expect(User.create).not.toHaveBeenCalled();
     });
   });
 });
