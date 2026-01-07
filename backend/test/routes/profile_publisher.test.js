@@ -1,5 +1,5 @@
 import request from "supertest";
-import {  vi, describe, it, expect, beforeEach} from "vitest"; 
+import {  vi, describe, it, expect} from "vitest"; 
 import {VALID_TEST_TOKEN_U, VALID_TEST_TOKEN_P, VALID_TEST_TOKEN_MP} from '../function/token_test.js'
 import app from "../../src/app.js"; 
 import * as userController from '../../src/controllers/user.controller.js';
@@ -10,8 +10,6 @@ const AUTHORIZATION_HEADER_MP = `Bearer ${VALID_TEST_TOKEN_MP}`;
 const INVALID_AUTHORIZATION_HEADER = `Bearer invalid.token.12345`;
 const EXISTING_PUBLISHER_ID = 1
 const WRONG_ID = 999
-
-beforeEach(() => vi.restoreAllMocks());
 
 describe("GET /profile/publisher/:userID", () => {
 

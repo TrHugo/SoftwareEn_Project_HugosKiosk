@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { checkUser, checkRole} from '../../utils/JetonVerification.js';
-import { publisher_profile_access, user_profile_access} from "../../utils/constant.js";
+import { publisher_profile_access, user_profile_access, admin_profile_access} from "../../utils/constant.js";
 import { getUserById } from "../../controllers/user.controller.js";
 
 const router = Router();
@@ -68,4 +68,37 @@ router.get('/profile/user/:userID', checkUser, checkRole(user_profile_access), a
     }
 
 });
+
+router.get('/profile/admin/:userID', checkUser, checkRole(admin_profile_access), async (req, res, next) =>{
+    const adminId = String(req.params.userID);
+
+
+    if (isNaN(Number(adminId))) {
+        const err = new Error("Admin ID incorrect");
+        err.status = 400;   
+        return next(err);
+    }
+
+    if (req.userId != adminId)
+    {
+        const err = new Error("Access refused");
+        err.status = 403; 
+        return next(err);
+    }
+
+    const admin = await getUserById(adminId);
+
+    if (admin) {
+        res.status(200).json({
+            success: true,
+            info: admin
+        });
+    }
+    else {
+        const err = new Error("Admin not found");
+        err.status = 404;
+        return next(err);
+    }
+});
+
 export default router

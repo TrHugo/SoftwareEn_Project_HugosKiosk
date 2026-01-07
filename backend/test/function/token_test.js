@@ -17,7 +17,6 @@ const token_mu = jwt.sign(
 );
 export const VALID_TEST_TOKEN_MU = token_mu;
 
-
 const token_p = jwt.sign(
     { Id: 1, Type: "publisher" },
     JETON_CODE,
@@ -31,6 +30,20 @@ const token_mp = jwt.sign(
     { expiresIn: '1h' } 
 );
 export const VALID_TEST_TOKEN_MP = token_mp;
+
+const token_a = jwt.sign(
+    { Id: 1, Type: "admin" },
+    JETON_CODE,
+    { expiresIn: '1h' } 
+);
+export const VALID_TEST_TOKEN_A = token_a;
+
+const token_ma = jwt.sign(
+    { Id: 999, Type: "admin" },
+    JETON_CODE,
+    { expiresIn: '1h' } 
+);
+export const VALID_TEST_TOKEN_MA = token_ma;
 
 const token_no_data = jwt.sign(
     {},
