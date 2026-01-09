@@ -35,7 +35,7 @@ export default function Info() {
             <h2>Informations du Backend</h2>
             {infoData && (
                 <ul>
-                    <li><strong>Nom de l'App :</strong> {infoData.name}</li>
+                    <li><strong>App name :</strong> {infoData.name}</li>
                     <li><strong>Version :</strong> {infoData.version}</li>
                     <li><strong>Node.js Version :</strong> {infoData.node}</li>
                     <li><strong>Uptime (Temps d'activité) :</strong> {infoData.uptime}</li>

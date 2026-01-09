@@ -35,7 +35,7 @@ export default function Version() {
             <h2>Version</h2>
             {VersionData && (
                 <ul>
-                    <strong>Nom de l'App :</strong> {VersionData.version}
+                    <strong>App version :</strong> {VersionData.version}
                 </ul>
             )}
             {!VersionData && <p>Aucune donnée disponible.</p>}

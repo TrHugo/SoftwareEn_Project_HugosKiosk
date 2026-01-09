@@ -8,6 +8,11 @@ const Legal = () => {
         <p style={styles.text}>
           Whatever legal informations we need to publish, to continue later.
         </p>
+        <ul style ={styles.text}>
+          <li>When you buy there is no refund.</li>
+          <li>Do not share your account.</li>
+          <li>We are not responsible once you lose your account.</li>
+        </ul> 
       </div>
     </main>
   );

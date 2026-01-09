@@ -38,14 +38,14 @@ const ArticleReader = () => {
     <div style={styles.container}>
       {/* Bouton retour */}
       <Link to="/" style={styles.backLink}>
-        ← Retour aux news
+        ← Back to the news
       </Link>
 
       {/* En-tête de l'article */}
       <div style={styles.header}>
         <h1 style={styles.title}>{article.title}</h1>
         <div style={styles.meta}>
-          <span>Publié le {new Date(article.createdAt).toLocaleDateString()}</span>
+          <span>Published  {new Date(article.createdAt).toLocaleDateString()}</span>
           {/* Si tu as le nom du publisher un jour, tu peux l'ajouter ici */}
         </div>
       </div>
