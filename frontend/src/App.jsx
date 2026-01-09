@@ -1,63 +1,52 @@
-import { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import Header from './component/header'
-import Info from './component/info'
-import Version from './component/version'
+import React from 'react';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from './context/AuthContext';
 
-//import reactLogo from './assets/react.svg'
-//import viteLogo from '/vite.svg'
-import './App.css'
+// Import des composants
+import Header from './component/header';
+import Footer from './component/Footer'; // N'oublie pas le footer qu'on a créé avant
+import Home from './pages/Home'; // Notre nouvelle page d'accueil
+import Info from './pages/info';
+import Version from './component/version';
+import WorkInProgress from './pages/WorkInProgress';
+import Contacts from './pages/Contacts';
+import Legal from './pages/Legal';
+import ArticleReader from './pages/ArticleReader';
+import SearchPage from './pages/SearchPage';
+import Profile from './pages/Profile';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Subscription from './pages/Subscription';
+
+import './App.css';
 
 function App() {
-  //const [count, setCount] = useState(0)
-  const [message, setMessage] = useState('');
+  return (
+    /* IMPORTANT : On enveloppe tout le routeur dans AuthProvider.
+       C'est ça qui "allume" le contexte pour que Profile puisse l'utiliser.
+    */
+    <AuthProvider>
+      <BrowserRouter>
+        <Header />
 
-  useEffect(() => {
-    fetch('/api')
-      .then(res => res.json())
-      .then(data => setMessage(data.message))
-  },[])
+        <Routes>
+          <Route path="/" element={<Home pageName="Home" />} />
+          <Route path="/info" element={<Info pageName="info" />} />
+          <Route path="/version" element={<Version pageName="version" />} />
+          <Route path="/profile" element={<Profile pageName="MyProfile" />} />
+          <Route path="/subscribe" element={<Subscription pageName="Subscription" />} />
+          <Route path="/search" element={<SearchPage pageName="Search" />} />
+          <Route path="/contacts" element={<Contacts pageName="OurGroup" />} />
+          <Route path="/legal" element={<Legal pageName="Legal" />} />
+          <Route path="/article/:id" element={<ArticleReader pageName="Article Reader" />} />
+          <Route path="/login" element={<Login pageName="Log In" />} />
+          <Route path="/register" element={<Register pageName="Register" />} />
+        </Routes>
 
-  /*return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )*/
-
-    return (
-    <BrowserRouter>
-      <nav>
-        <Link to="/">main</Link>
-        <Link to="/info">info</Link>
-        <Link to="/version">version</Link>
-      </nav>
-
-      <Routes>
-        <Route path="/" element={<Header />} />
-        <Route path="/info" element={<Info />} />
-        <Route path="/version" element={<Version />} />
-      </Routes>
-    </BrowserRouter>
+        <Footer />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
-export default App
+export default App;
