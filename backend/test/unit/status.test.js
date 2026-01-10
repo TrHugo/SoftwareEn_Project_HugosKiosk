@@ -1,7 +1,3 @@
-/**
- * Unit tests for src/utils/status.js.
- * Covers all branches for good branch coverage.
- */
 import { describe, it, expect } from "vitest";
 import { formatStatus } from "../../src/utils/status.js";
 
