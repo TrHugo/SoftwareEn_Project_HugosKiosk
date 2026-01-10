@@ -5,23 +5,47 @@ import { useAuth } from '../context/AuthContext';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleLogin = (e) => {
+  const handleLogin = async(e) => {
     e.preventDefault();
-    // SIMULATION BACKEND : On crée un faux utilisateur
-    const fakeUser = {
-      name: "Utilisateur Test",
-      email: email,
-      token: "123456"
-    };
-    
-    // On appelle la fonction du AuthContext
-    login(fakeUser);
-    
-    // On redirige vers le profil
-    navigate('/profile');
+    setError('');
+    try {
+      // Appel à ton backend (Node/Express)
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            // Ton backend attend 'name', 'email' et 'password' selon ton code
+            name: "NomInutile", // Ton contrôleur actuel exige 'name' même pour le login
+            email, 
+            password 
+        }),
+      });
+      console.log("4");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Erreur de connexion");
+      }
+      console.log("3");
+      // 1. Stockage du token pour les futures requêtes API (ex: GET /articles)
+      localStorage.setItem('token', data.token);
+      console.log("2");
+      // 2. Mise à jour du AuthContext (SessionStorage + State React)
+      // On passe data.user que ton backend renvoie maintenant
+      login(data.user);
+      console.log("1");
+      // 3. Redirection
+      navigate('/profile');
+
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   // --- STYLES ---

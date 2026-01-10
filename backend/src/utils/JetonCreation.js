@@ -2,13 +2,13 @@ import dotenv from "dotenv";
 import jwt from 'jsonwebtoken'
 import { JWT_EXPIRATION} from '../utils/constant.js';
 import { comparePassword } from "../utils/passwordHash.js";
-import { getUserByEmailAndMail } from '../controllers/user.controller.js';
+import { getUserByEmail } from '../controllers/user.controller.js';
 
 dotenv.config();
 
 export async function login(req, res, next) {
-    const { name, email, password } = req.body;
-    if (name==undefined || email==undefined || password==undefined)
+    const { email, password } = req.body;
+    if (email==undefined || password==undefined)
     {
         const err = new Error("POST error");
         err.status = 400; 
@@ -16,7 +16,7 @@ export async function login(req, res, next) {
     }
     try {
 
-        const user = await getUserByEmailAndMail(name, email);
+        const user = await getUserByEmail(email);
 
         if (!user) {
             const err = new Error("E-mail ou mot de passe incorrect.");
@@ -34,7 +34,9 @@ export async function login(req, res, next) {
 
         const token = jwt.sign(
             {
-                userId: user._id,
+                id: user._id,
+                name: user.name,
+                email: user.email,
                 role: user.role
             },
             process.env.JETON_CODE,

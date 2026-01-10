@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 
 export default function Register() {
   const [formData, setFormData] = useState({ 
@@ -13,14 +12,13 @@ export default function Register() {
   
   const [error, setError] = useState(''); // Pour afficher les erreurs
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const handleChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -36,12 +34,35 @@ export default function Register() {
       return;
     }
 
-    // SIMULATION BACKEND
-    // Dans la vraie vie, ici on enverrait les données au serveur
-    console.log("Compte créé pour :", formData.name);
-    
-    login({ name: formData.name, email: formData.email });
-    navigate('/profile');
+    try {
+      // 3. APPEL RÉEL AU BACKEND
+      const response = await fetch('/api/signup', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          mdp: formData.password, // On envoie 'password' vers 'mdp' attendu par le backend
+          role: 'user'            // On définit le type par défaut
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Affiche l'erreur renvoyée par ton contrôleur (ex: "Cet email est déjà utilisé")
+        throw new Error(data.error || "Erreur lors de l'inscription");
+      }
+
+      // 4. Succès
+      //alert("Compte créé ! Veuillez vous connecter.");
+      navigate('/login');
+
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const styles = {

@@ -11,9 +11,9 @@ export async function getUserById(userId) {
     }
 }
 
-export async function getUserByEmailAndMail(name, email) {
+export async function getUserByEmail(email) {
     try {
-        const user = await User.findOne({ email: email, name: name }).lean();
+        const user = await User.findOne({ email: email }).lean();
         return user;
     } catch (error) {
         throw error;
@@ -22,11 +22,11 @@ export async function getUserByEmailAndMail(name, email) {
 
 export async function createUser(req, res, next) {
   try {
-    const { name, email, mdp, type } = req.body;
+    const { name, email, mdp, role } = req.body;
 
     // 1. Vérification des champs requis
-    if (!name || !email || !mdp || !type) {
-      return res.status(400).json({ error: "Tous les champs (name, email, mdp, type) sont requis." });
+    if (!name || !email || !mdp || !role) {
+      return res.status(400).json({ error: "Tous les champs (name, email, mdp, role) sont requis." });
     }
 
     // 2. Validation Email (Regex simple)
@@ -57,7 +57,7 @@ export async function createUser(req, res, next) {
 
     // 6. Hachage et Création
     const hashedMdp = await hashPassword(mdp);
-    const created = await User.create({ id, name, email, mdp: hashedMdp, type });
+    const created = await User.create({ id, name, email, mdp: hashedMdp, role });
 
     // 7. Nettoyage de la réponse (On retire le mdp)
     const userObj = created.toObject();
@@ -70,6 +70,7 @@ export async function createUser(req, res, next) {
     });
 
   } catch (err) {
+    console.error("ERREUR DÉTECTÉE DANS CREATE USER :", err);
     next(err);
   }
 };
