@@ -1,21 +1,19 @@
 import jwt from 'jsonwebtoken';
-const JETON_CODE = process.env.JETON_CODE;
 
 export const checkUser = (req, res, next) => {
     try {
         if (!req.headers || !req.headers.authorization) {
             throw new Error('No authorization header');
         }
-
         const token = req.headers.authorization.split(" ")[1]; 
-        let decodedToken = jwt.verify(token, JETON_CODE);
+        let decodedToken = jwt.verify(token, process.env.JETON_CODE);
 
-        if (decodedToken.Id === undefined || decodedToken.Type === undefined) {
+        if (decodedToken.id === undefined || decodedToken.role === undefined) {
             throw new Error("Missing essential user data in token.");
         }
 
-        req.userId = String(decodedToken.Id);
-        req.userRole = String(decodedToken.Type);
+        req.userId = String(decodedToken.id);
+        req.userRole = String(decodedToken.role);
 
         next();
 

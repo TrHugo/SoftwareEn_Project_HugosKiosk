@@ -8,8 +8,13 @@ const ArticleReader = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
     // Appel à la route backend publique de lecture
-    fetch(`/api/read/${id}`)
+    fetch(`/api/read/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then((res) => {
         if (!res.ok) throw new Error("Article introuvable");
         return res.json();

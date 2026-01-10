@@ -7,8 +7,9 @@
  * App entrypoint.
  * Le serveur n'écoute le port que si la connexion DB est réussie.
  */
+import dotenv from "dotenv";
+dotenv.config();
 import app from "./app.js";
-import mongoose from "mongoose";
 import {connectDb} from "./db.js"; 
 
 const PORT = process.env.PORT || 3000;

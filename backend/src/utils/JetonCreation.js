@@ -1,10 +1,7 @@
-import dotenv from "dotenv";
 import jwt from 'jsonwebtoken'
 import { JWT_EXPIRATION} from '../utils/constant.js';
 import { comparePassword } from "../utils/passwordHash.js";
 import { getUserByEmail } from '../controllers/user.controller.js';
-
-dotenv.config();
 
 export async function login(req, res, next) {
     const { email, password } = req.body;
@@ -15,7 +12,7 @@ export async function login(req, res, next) {
         return next(err);
     }
     try {
-
+        console.log("login: ", process.env.JETON_CODE);
         const user = await getUserByEmail(email);
 
         if (!user) {
