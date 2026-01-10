@@ -11,7 +11,7 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(''); // On efface les anciennes erreurs avant de réessayer
+    setError('');
 
     try {
       const response = await fetch('/api/login', {
@@ -29,26 +29,19 @@ export default function Login() {
       const data = await response.json();
 
       if (!response.ok) {
-        // Si le backend renvoie une erreur (400, 401, 404...)
-        // On essaie d'afficher le message précis du backend (ex: "User not found")
-        // Sinon, on met un message générique en anglais.
         throw new Error(data.message || "Login failed. Please check your credentials.");
       }
 
-      // Si tout est OK :
       localStorage.setItem('token', data.token);
       login(data.user);
       navigate('/profile');
 
     } catch (err) {
-      // C'est ici qu'on gère le message spécifique si l'utilisateur n'est pas trouvé
-      // (Si ton backend est bien fait, il enverra déjà le bon message dans data.message)
       console.error("Login Error:", err);
       setError(err.message); 
     }
   };
 
-  // --- STYLES ---
   const styles = {
     container: {
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -66,9 +59,8 @@ export default function Login() {
       width: '100%', padding: '12px', borderRadius: '8px',
       border: '1px solid #ccc', fontSize: '16px', boxSizing: 'border-box'
     },
-    // NOUVEAU STYLE POUR L'ERREUR
     errorMessage: {
-      color: '#d9534f', // Rouge
+      color: '#d9534f',
       backgroundColor: '#f9d6d5',
       padding: '10px',
       borderRadius: '5px',
@@ -91,7 +83,6 @@ export default function Login() {
       <div style={styles.card}>
         <h2 style={styles.title}>Log In</h2>
         
-        {/* C'EST ICI QUE L'ERREUR S'AFFICHERA MAINTENANT */}
         {error && <div style={styles.errorMessage}>{error}</div>}
 
         <form onSubmit={handleLogin}>
