@@ -6,7 +6,8 @@ const UserSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     mdp: { type: String, required: true }, // to hash password
-    role: { type: String, required: true, enum: ['user', 'publisher', 'admin'], default: 'user' }
+    role: { type: String, required: true, enum: ['user', 'publisher', 'admin'], default: 'user' },
+    subscriptionExpiresAt: { type : Date, default: null }
   },
   { timestamps: true }
 );
