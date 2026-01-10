@@ -1,6 +1,5 @@
 import React from 'react';
 
-// Ce composant accepte une "prop" (pageName) pour afficher le titre correct
 const WorkInProgress = ({ pageName }) => {
   return (
     <div style={styles.container}>
