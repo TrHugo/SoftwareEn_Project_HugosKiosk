@@ -1,7 +1,3 @@
-/**
- * Small helpers used by /info.
- * Keeping logic here makes unit tests simple and fast.
- */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
