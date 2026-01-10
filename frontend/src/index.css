@@ -3,11 +3,10 @@
   line-height: 1.5;
   font-weight: 400;
 
-  /* Couleurs inspirées de ton image du bas */
-  --bg-color: #F5F5F7; /* Gris très clair */
+  --bg-color: #F5F5F7;
   --text-color: #333333;
   --card-bg: #FFFFFF;
-  --header-wood: #E8DCC0; /* Beige aspect bois */
+  --header-wood: #E8DCC0;
   --header-text: #5A4A42;
   --footer-bg: #2C2C2C;
   --footer-text: #E0E0E0;
@@ -21,7 +20,6 @@ body {
   min-height: 100vh;
 }
 
-/* Pour faire disparaître les scrollbars moches tout en gardant le scroll */
 ::-webkit-scrollbar {
   width: 8px;
 }
