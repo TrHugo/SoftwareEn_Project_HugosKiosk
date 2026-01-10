@@ -1,4 +1,4 @@
-import { checkUser } from '../../utils/JetonVerification.js';
+import { checkUser, CheckSubsription } from '../../utils/JetonVerification.js';
 import { 
   getArticleById, 
   createArticle, 
@@ -26,7 +26,7 @@ router.get('/search',  searchArticles);
 // URL: GET /api/read/:articleId
 // Note: J'ai changé le path en '/read/:id' pour éviter les conflits, 
 // ou on peut utiliser '/:articleId' si on le place à la fin.
-router.get('/read/:articleId', checkUser, async (req, res, next) => {
+router.get('/read/:articleId', checkUser, CheckSubsription, async (req, res, next) => {
     try {
         const articleId = req.params.articleId;
 

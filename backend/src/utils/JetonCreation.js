@@ -34,7 +34,8 @@ export async function login(req, res, next) {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                subscription: user.subscription
             },
             process.env.JETON_CODE,
             { expiresIn: JWT_EXPIRATION }

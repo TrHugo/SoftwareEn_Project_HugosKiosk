@@ -1,21 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 
 const ArticleReader = () => {
-  const { id } = useParams(); // Récupère le numéro depuis l'URL (ex: /article/1)
+  const { id } = useParams(); 
+  const navigate = useNavigate();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    // Appel à la route backend publique de lecture
+
     fetch(`/api/read/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
       .then((res) => {
+        if (res.status === 403) {
+          navigate('/subscribe');
+          return;
+        }
+        if (res.status === 401) {
+          navigate('/login');
+          return;
+        }
         if (!res.ok) throw new Error("Article introuvable");
         return res.json();
       })
@@ -28,7 +37,7 @@ const ArticleReader = () => {
         setError(true);
         setLoading(false);
       });
-  }, [id]);
+  }, [id, navigate]);
 
   if (loading) return <div style={styles.loading}>Chargement de l'article...</div>;
   

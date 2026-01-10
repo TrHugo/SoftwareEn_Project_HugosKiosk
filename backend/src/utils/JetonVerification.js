@@ -44,3 +44,25 @@ export const checkRole = (requiredRoles) => {
         }
     };
 };
+
+export const CheckSubsription = (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+        const token = authHeader.split(" ")[1];
+        const decodedToken = jwt.verify(token, process.env.JETON_CODE);
+
+        const expirationDate = decodedToken.subscription;
+
+        if (!expirationDate || new Date(expirationDate) < new Date()) {
+            const err = new Error("Abonnement requis ou expiré");
+            err.status = 403; 
+            return next(err);
+        }
+
+        next();
+    } catch (error) {
+        const err = new Error("Erreur authentification");
+        err.status = 401;
+        return next(err);
+    }
+};
