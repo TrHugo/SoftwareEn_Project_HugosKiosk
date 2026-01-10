@@ -5,10 +5,9 @@ import { useAuth } from '../context/AuthContext';
 export default function Payment() {
   const location = useLocation();
   const navigate = useNavigate();
-  
-  // MODIFICATION 1 : On récupère 'login' pour mettre à jour l'app après paiement
+
   const { user, login } = useAuth();
-  
+
   const plan = location.state?.plan;
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -26,19 +25,17 @@ export default function Payment() {
     setIsLoading(true);
 
     try {
-      // 1. Récupération du token actuel (pour prouver qu'on est connecté)
       const currentToken = localStorage.getItem('token');
       if (!currentToken) throw new Error("Vous devez être connecté");
 
-      // 2. Appel au Backend (Route créée précédemment)
       const response = await fetch('/api/payment/confirm', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${currentToken}` // On envoie le token dans le header
+          'Authorization': `Bearer ${currentToken}`
         },
         body: JSON.stringify({ 
-          planName: plan.name // "Discovery", "Regular" ou "Premium"
+          planName: plan.name
         }),
       });
 
@@ -48,25 +45,18 @@ export default function Payment() {
         throw new Error(data.message || "Erreur lors du paiement");
       }
 
-      // --- SIMULATION VISUELLE (Pour garder l'effet d'attente pro) ---
       setTimeout(() => {
-        
-        // 3. MISE À JOUR CRITIQUE
-        // On remplace le vieux token par le nouveau (qui contient la nouvelle date d'expiration)
         localStorage.setItem('token', data.token);
-        
-        // On met à jour le contexte React avec le nouvel utilisateur (pour que la Profile page soit verte)
         login(data.user);
 
         setIsLoading(false);
         setSuccess(true);
-        
-        // Redirection
+
         setTimeout(() => {
           navigate('/profile');
         }, 2000);
 
-      }, 1500); // On garde 1.5s de "Processing..." pour l'effet réaliste
+      }, 1500);
 
     } catch (error) {
       console.error("Erreur paiement:", error);
@@ -75,7 +65,6 @@ export default function Payment() {
     }
   };
 
-  // --- STYLES (Identiques à avant) ---
   const styles = {
     container: {
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -92,7 +81,7 @@ export default function Payment() {
     planTitle: { fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '10px' },
     divider: { height: '1px', backgroundColor: '#5A4A42', opacity: 0.2, margin: '20px 0' },
     totalRow: { display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', fontWeight: 'bold' },
-    
+
     formCard: {
       backgroundColor: '#fff', padding: '30px', borderRadius: '20px', flex: '1.5', minWidth: '320px',
       boxShadow: '0 10px 30px rgba(0,0,0,0.05)', border: '1px solid #eee'
@@ -106,7 +95,7 @@ export default function Payment() {
       backgroundColor: '#f9f9f9'
     },
     row: { display: 'flex', gap: '15px' },
-    
+
     payButton: {
       width: '100%', padding: '18px', marginTop: '20px',
       backgroundColor: '#2C2C2C', color: '#fff', border: 'none', borderRadius: '50px',
@@ -114,7 +103,7 @@ export default function Payment() {
       display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px',
       opacity: isLoading ? 0.7 : 1,
     },
-    
+
     successOverlay: {
       position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
       backgroundColor: 'rgba(255,255,255,0.95)', zIndex: 2000,
@@ -140,10 +129,8 @@ export default function Payment() {
   return (
     <div style={styles.container}>
       <h1 style={{marginBottom: '40px'}}>Secure Checkout</h1>
-      
+
       <div style={styles.wrapper}>
-        
-        {/* RECAP */}
         <div style={styles.summaryCard}>
           <div>
             <div style={styles.planTitle}>{plan.name} Plan</div>
@@ -161,14 +148,11 @@ export default function Payment() {
           </div>
         </div>
 
-        {/* FORMULAIRE */}
         <div style={styles.formCard}>
           <div style={styles.formTitle}>Payment Details</div>
           <form onSubmit={handlePayment}>
-            
             <div style={styles.inputGroup}>
               <label style={styles.label}>Cardholder Name</label>
-              {/* MODIFICATION 2 : Pré-remplissage du nom */}
               <input 
                 type="text" 
                 placeholder="Hugo ..." 
@@ -197,12 +181,11 @@ export default function Payment() {
             <button type="submit" style={styles.payButton}>
               {isLoading ? 'Processing...' : `Pay ${plan.price}`}
             </button>
-            
+
             <div style={{textAlign: 'center', marginTop: '15px', fontSize: '0.8rem', color: '#aaa', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px'}}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
               Encrypted & Secure Transaction
             </div>
-
           </form>
         </div>
       </div>
