@@ -6,11 +6,11 @@ export default function Register() {
     name: '', 
     email: '', 
     password: '', 
-    confirmPassword: '', // Nouveau champ
-    acceptTerms: false   // Nouveau champ
+    confirmPassword: '',
+    acceptTerms: false
   });
   
-  const [error, setError] = useState(''); // Pour afficher les erreurs
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -22,20 +22,17 @@ export default function Register() {
     e.preventDefault();
     setError('');
 
-    // 1. Validation : Mots de passe identiques ?
     if (formData.password !== formData.confirmPassword) {
       setError("Les mots de passe ne correspondent pas.");
       return;
     }
 
-    // 2. Validation : Conditions acceptées ?
     if (!formData.acceptTerms) {
       setError("Vous devez accepter les conditions générales.");
       return;
     }
 
     try {
-      // 3. APPEL RÉEL AU BACKEND
       const response = await fetch('/api/signup', { 
         method: 'POST',
         headers: {
@@ -44,20 +41,17 @@ export default function Register() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          mdp: formData.password, // On envoie 'password' vers 'mdp' attendu par le backend
-          role: 'user'            // On définit le type par défaut
+          mdp: formData.password,
+          role: 'user'
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        // Affiche l'erreur renvoyée par ton contrôleur (ex: "Cet email est déjà utilisé")
         throw new Error(data.error || "Erreur lors de l'inscription");
       }
 
-      // 4. Succès
-      //alert("Compte créé ! Veuillez vous connecter.");
       navigate('/login');
 
     } catch (err) {
@@ -97,7 +91,7 @@ export default function Register() {
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>Create Account</h2>
-        
+
         {error && <div style={styles.errorMessage}>{error}</div>}
 
         <form onSubmit={handleRegister}>
@@ -116,13 +110,11 @@ export default function Register() {
             <input name="password" type="password" required style={styles.input} onChange={handleChange} />
           </div>
 
-          {/* Confirmation du mot de passe */}
           <div style={styles.inputGroup}>
             <label style={styles.label}>Confirm Password</label>
             <input name="confirmPassword" type="password" required style={styles.input} onChange={handleChange} />
           </div>
 
-          {/* Checkbox Legal */}
           <div style={styles.checkboxGroup}>
             <input 
               name="acceptTerms" 
