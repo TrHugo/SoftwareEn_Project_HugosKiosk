@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { user_profile_access, publisher_profile_access } from '../../src/utils/constant.js'
 import {VALID_TEST_TOKEN_U, TEST_TOKEN_NO_DATA, FALSE_TEST_TOKEN} from '../function/token_test.js'
-import { checkUser, checkRole } from "../../src/utils/JetonVerification.js";
+import { checkUser, checkRole, CheckSubsription } from "../../src/utils/JetonVerification.js";
 import jwt from 'jsonwebtoken';
 
 const AUTHORIZATION_HEADER = `Bearer ${VALID_TEST_TOKEN_U}`
@@ -111,3 +111,97 @@ describe("checkRole", () => {
         expect(error.message).toEqual("No role found");
       });
 })
+
+describe("CheckSubsription", () => {
+
+    it("1. Success: Subscription is valid (date in future)", () => {
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + 7);
+
+        const mockPayload = { 
+            id: '1', 
+            role: 'user', 
+            subscription: futureDate.toISOString() 
+        };
+        
+        vi.spyOn(jwt, 'verify').mockReturnValue(mockPayload);
+
+        const req = {
+            headers: { authorization: 'Bearer VALID_TOKEN' }
+        };
+        const next = vi.fn();
+
+        CheckSubsription(req, {}, next);
+
+        expect(next).toHaveBeenCalledWith();
+        expect(next).toHaveBeenCalledTimes(1);
+    });
+
+    it("2. Failure: Subscription expired (date in past)", () => {
+        const pastDate = new Date();
+        pastDate.setDate(pastDate.getDate() - 5); 
+
+        vi.spyOn(jwt, 'verify').mockReturnValue({
+            id: '1',
+            role: 'user',
+            subscription: pastDate.toISOString()
+        });
+
+        const req = {
+            headers: { authorization: 'Bearer EXPIRED_TOKEN' }
+        };
+        const next = vi.fn();
+
+        CheckSubsription(req, {}, next);
+
+        const error = next.mock.calls[0][0];
+        expect(error.status).toBe(403);
+        expect(error.message).toEqual("Abonnement requis ou expiré");
+    });
+
+    it("3. Failure: Good token but NO subscription data (null)", () => {
+        vi.spyOn(jwt, 'verify').mockReturnValue({
+            id: '1',
+            role: 'user',
+            subscription: null 
+        });
+
+        const req = {
+            headers: { authorization: 'Bearer NO_SUB_TOKEN' }
+        };
+        const next = vi.fn();
+
+        CheckSubsription(req, {}, next);
+
+        const error = next.mock.calls[0][0];
+        expect(error.status).toBe(403);
+        expect(error.message).toEqual("Abonnement requis ou expiré");
+    });
+
+    it("4. Failure: Wrong/Malformed token", () => {
+        vi.spyOn(jwt, 'verify').mockImplementation(() => {
+            throw new Error("JsonWebTokenError: invalid signature");
+        });
+
+        const req = {
+            headers: { authorization: 'Bearer INVALID_TOKEN' }
+        };
+        const next = vi.fn();
+
+        CheckSubsription(req, {}, next);
+
+        const error = next.mock.calls[0][0];
+        expect(error.status).toBe(401); 
+        expect(error.message).toEqual("Erreur authentification");
+    });
+
+    it("5. Failure: No Authorization header", () => {
+        const req = { headers: {} }; 
+        const next = vi.fn();
+
+        CheckSubsription(req, {}, next);
+
+        const error = next.mock.calls[0][0];
+        expect(error.status).toBe(401);
+    });
+});
