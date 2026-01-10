@@ -34,7 +34,7 @@ export async function login(req, res, next) {
 
         const token = jwt.sign(
             {
-                id: user._id,
+                id: user.id,
                 name: user.name,
                 email: user.email,
                 role: user.role
@@ -45,9 +45,12 @@ export async function login(req, res, next) {
 
         res.status(200).json({
             message: "Connexion réussie",
-            token
-        });
-
+            token,
+            user: {
+                name: user.name,
+                email: user.email,
+                }
+            });
     } catch (error) {
         console.log(error)
         error.status = error.status || 500;

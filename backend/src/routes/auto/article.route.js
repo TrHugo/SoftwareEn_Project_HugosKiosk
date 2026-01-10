@@ -20,13 +20,13 @@ router.get('/latest', getLatestPublicArticles);
 
 // 2. Recherche d'articles
 // URL: GET /api/search?q=motcle
-router.get('/search', searchArticles);
+router.get('/search',  searchArticles);
 
 // 3. Lire un article spécifique (Lecture publique)
 // URL: GET /api/read/:articleId
 // Note: J'ai changé le path en '/read/:id' pour éviter les conflits, 
 // ou on peut utiliser '/:articleId' si on le place à la fin.
-router.get('/read/:articleId', async (req, res, next) => {
+router.get('/read/:articleId', checkUser, async (req, res, next) => {
     try {
         const articleId = req.params.articleId;
 

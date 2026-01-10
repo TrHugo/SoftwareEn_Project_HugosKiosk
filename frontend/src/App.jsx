@@ -17,6 +17,7 @@ import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Subscription from './pages/Subscription';
+import { ProtectedRoute } from './context/ProtectedRoute';
 
 import './App.css';
 
@@ -30,15 +31,15 @@ function App() {
         <Header />
 
         <Routes>
-          <Route path="/" element={<Home pageName="Home" />} />
+          <Route path="/" element={<ProtectedRoute><Home pageName="Home" /></ProtectedRoute>} />
           <Route path="/info" element={<Info pageName="info" />} />
           <Route path="/version" element={<Version pageName="version" />} />
-          <Route path="/profile" element={<Profile pageName="MyProfile" />} />
-          <Route path="/subscribe" element={<Subscription pageName="Subscription" />} />
-          <Route path="/search" element={<SearchPage pageName="Search" />} />
+          <Route path="/profile" element={<ProtectedRoute><Profile pageName="MyProfile" /></ProtectedRoute>} />
+          <Route path="/subscribe" element={<ProtectedRoute><Subscription pageName="Subscription" /></ProtectedRoute>} />
+          <Route path="/search" element={<ProtectedRoute><SearchPage pageName="Search" /></ProtectedRoute>} />
           <Route path="/contacts" element={<Contacts pageName="OurGroup" />} />
           <Route path="/legal" element={<Legal pageName="Legal" />} />
-          <Route path="/article/:id" element={<ArticleReader pageName="Article Reader" />} />
+          <Route path="/article/:id" element={<ProtectedRoute><ArticleReader pageName="Article Reader" /></ProtectedRoute>} />
           <Route path="/login" element={<Login pageName="Log In" />} />
           <Route path="/register" element={<Register pageName="Register" />} />
         </Routes>
