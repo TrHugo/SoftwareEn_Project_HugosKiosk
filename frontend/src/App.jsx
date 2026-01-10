@@ -2,10 +2,9 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from './context/AuthContext';
 
-// Import des composants
 import Header from './component/header';
-import Footer from './component/Footer'; // N'oublie pas le footer qu'on a créé avant
-import Home from './pages/Home'; // Notre nouvelle page d'accueil
+import Footer from './component/Footer';
+import Home from './pages/Home';
 import Info from './pages/info';
 import Version from './component/version';
 import WorkInProgress from './pages/WorkInProgress';
@@ -24,9 +23,6 @@ import './App.css';
 
 function App() {
   return (
-    /* IMPORTANT : On enveloppe tout le routeur dans AuthProvider.
-       C'est ça qui "allume" le contexte pour que Profile puisse l'utiliser.
-    */
     <AuthProvider>
       <BrowserRouter>
         <Header />
