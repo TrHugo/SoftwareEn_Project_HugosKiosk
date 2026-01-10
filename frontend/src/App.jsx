@@ -31,7 +31,7 @@ function App() {
         <Header />
 
         <Routes>
-          <Route path="/" element={<ProtectedRoute><Home pageName="Home" /></ProtectedRoute>} />
+          <Route path="/" element={<Home pageName="Home" />} />
           <Route path="/info" element={<Info pageName="info" />} />
           <Route path="/version" element={<Version pageName="version" />} />
           <Route path="/profile" element={<ProtectedRoute><Profile pageName="MyProfile" /></ProtectedRoute>} />
