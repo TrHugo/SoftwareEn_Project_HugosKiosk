@@ -1,7 +1,3 @@
-/**
- * Unit tests for src/utils/errorHandler.js.
- * We stub a minimal `res` object to capture status and body.
- */
 import { describe, it, expect } from "vitest";
 import { errorHandler } from "../../src/utils/errorHandler.js";
 
