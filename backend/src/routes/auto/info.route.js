@@ -1,7 +1,3 @@
-/**
- * GET /info → merges two small helpers for easy unit testing.
- * Returns: { name, version, node, uptime }
- */
 import { Router } from "express";
 import { getPackageInfo, getRuntimeInfo } from "../../utils/appInfo.js";
 
