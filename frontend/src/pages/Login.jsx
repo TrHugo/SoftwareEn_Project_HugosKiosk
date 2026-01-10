@@ -9,42 +9,42 @@ export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleLogin = async(e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
+    setError(''); // On efface les anciennes erreurs avant de réessayer
+
     try {
-      // Appel à ton backend (Node/Express)
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-            // Ton backend attend 'name', 'email' et 'password' selon ton code
-            name: "NomInutile", // Ton contrôleur actuel exige 'name' même pour le login
-            email, 
-            password 
+          name: "NomInutile", 
+          email, 
+          password 
         }),
       });
-      console.log("4");
+
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Erreur de connexion");
+        // Si le backend renvoie une erreur (400, 401, 404...)
+        // On essaie d'afficher le message précis du backend (ex: "User not found")
+        // Sinon, on met un message générique en anglais.
+        throw new Error(data.message || "Login failed. Please check your credentials.");
       }
-      console.log("3");
-      // 1. Stockage du token pour les futures requêtes API (ex: GET /articles)
+
+      // Si tout est OK :
       localStorage.setItem('token', data.token);
-      console.log("2");
-      // 2. Mise à jour du AuthContext (SessionStorage + State React)
-      // On passe data.user que ton backend renvoie maintenant
       login(data.user);
-      console.log("1");
-      // 3. Redirection
       navigate('/profile');
 
     } catch (err) {
-      setError(err.message);
+      // C'est ici qu'on gère le message spécifique si l'utilisateur n'est pas trouvé
+      // (Si ton backend est bien fait, il enverra déjà le bon message dans data.message)
+      console.error("Login Error:", err);
+      setError(err.message); 
     }
   };
 
@@ -64,11 +64,21 @@ export default function Login() {
     label: { display: 'block', marginBottom: '5px', fontWeight: 'bold', fontSize: '14px' },
     input: {
       width: '100%', padding: '12px', borderRadius: '8px',
-      border: '1px solid #ccc', fontSize: '16px', boxSizing: 'border-box' // Important pour ne pas dépasser
+      border: '1px solid #ccc', fontSize: '16px', boxSizing: 'border-box'
+    },
+    // NOUVEAU STYLE POUR L'ERREUR
+    errorMessage: {
+      color: '#d9534f', // Rouge
+      backgroundColor: '#f9d6d5',
+      padding: '10px',
+      borderRadius: '5px',
+      marginBottom: '15px',
+      fontSize: '14px',
+      textAlign: 'center'
     },
     button: {
       width: '100%', padding: '15px', marginTop: '10px',
-      backgroundColor: '#E8DCC0', // BEIGE (Header)
+      backgroundColor: '#E8DCC0',
       color: '#5A4A42', border: 'none', borderRadius: '50px',
       fontSize: '16px', fontWeight: 'bold', cursor: 'pointer',
       transition: 'opacity 0.2s'
@@ -80,6 +90,10 @@ export default function Login() {
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>Log In</h2>
+        
+        {/* C'EST ICI QUE L'ERREUR S'AFFICHERA MAINTENANT */}
+        {error && <div style={styles.errorMessage}>{error}</div>}
+
         <form onSubmit={handleLogin}>
           <div style={styles.inputGroup}>
             <label style={styles.label}>Email Address</label>

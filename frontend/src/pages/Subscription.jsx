@@ -1,8 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Subscription() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const plans = [
     {
@@ -37,9 +39,12 @@ export default function Subscription() {
     }
   ];
 
-  const handleSubscribe = (planName) => {
-    console.log(`User selected: ${planName}`);
-    navigate('/login'); 
+  const handleSubscribe = (plan) => {
+    if (!user) {
+      navigate('/login');
+    } else {
+      navigate('/payment', { state: { plan: plan } });
+    }
   };
 
   // --- STYLES COMPACTS ---
@@ -170,7 +175,7 @@ export default function Subscription() {
 
             <button 
               style={styles.button(plan.isHighlight)}
-              onClick={() => handleSubscribe(plan.name)}
+              onClick={() => handleSubscribe(plan)}
             >
               Get Subscription
             </button>
