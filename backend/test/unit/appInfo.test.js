@@ -1,7 +1,3 @@
-/**
- * Unit tests for src/utils/appInfo.js.
- * No HTTP or Express involved; just pure functions.
- */
 import { describe, it, expect, vi } from "vitest";
 import { getPackageInfo, getRuntimeInfo } from "../../src/utils/appInfo.js";
 
