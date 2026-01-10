@@ -1,71 +1,70 @@
 import User from '../models/user.model.js'; 
 import jwt from 'jsonwebtoken';
-// Assure-toi que le chemin vers constant.js est bon pour récupérer JWT_EXPIRATION
 import { JWT_EXPIRATION } from '../utils/constant.js'; 
 
 export const confirmPayment = async (req, res, next) => {
     try {
-        const userId = req.userId; // Récupéré grâce au middleware checkUser
-        const { planName } = req.body; // "Discovery", "Regular", "Premium"
+        const userId = Number(req.userId); 
+        const { planName } = req.body; 
 
         if (!planName) {
-            return res.status(400).json({ message: "No subscription plan provided" });
+            return res.status(400).json({ message: "Nom du plan manquant" });
         }
 
+        // --- MODIFICATION ICI ---
         // 1. Calcul de la nouvelle date d'expiration
-        // On commence par "Maintenant"
+        // On part TOUJOURS de la date et l'heure actuelles (Date du jour)
         let newExpirationDate = new Date();
         
-        // On cherche l'user pour voir s'il a déjà un abo en cours
-        const currentUser = await User.findOne({ id: userId });
-        
-        // S'il a un abo valide qui finit dans le futur, on prolonge à partir de cette date future
-        if (currentUser && currentUser.subscriptionExpiresAt && new Date(currentUser.subscriptionExpiresAt) > new Date()) {
-             newExpirationDate = new Date(currentUser.subscriptionExpiresAt);
-        }
+        // ON A SUPPRIMÉ LE BLOC "IF" QUI REGARDAIT L'ANCIENNE DATE.
+        // Maintenant, peu importe si l'utilisateur avait encore 10 jours ou 1 an,
+        // on écrase tout et on repart d'aujourd'hui.
 
-        // Ajout du temps selon le plan
         if (planName === "Discovery") {
-            newExpirationDate.setDate(newExpirationDate.getDate() + 7); // +7 jours
+            // Aujourd'hui + 7 jours
+            newExpirationDate.setDate(newExpirationDate.getDate() + 7); 
         } else if (planName === "Regular") {
-            newExpirationDate.setMonth(newExpirationDate.getMonth() + 1); // +1 mois
+            // Aujourd'hui + 1 mois
+            newExpirationDate.setMonth(newExpirationDate.getMonth() + 1); 
         } else if (planName === "Premium") {
-            newExpirationDate.setFullYear(newExpirationDate.getFullYear() + 1); // +1 an
+            // Aujourd'hui + 1 an
+            newExpirationDate.setFullYear(newExpirationDate.getFullYear() + 1); 
         }
 
-        // 2. Mise à jour dans MongoDB
+        console.log(`Reset abonnement pour User ${userId}. Nouvelle fin : ${newExpirationDate}`);
+
+        // 2. Mise à jour MongoDB (On écrase l'ancienne date)
         const updatedUser = await User.findOneAndUpdate(
             { id: userId }, 
             { subscriptionExpiresAt: newExpirationDate }, 
-            { new: true } // Renvoie l'utilisateur mis à jour
+            { new: true } 
         );
 
         if (!updatedUser) {
-            throw new Error("unfound user");
+            return res.status(404).json({ message: "Utilisateur introuvable" });
         }
 
-        // 3. GÉNÉRATION DU NOUVEAU TOKEN (CRUCIAL)
-        // C'est ici qu'on "grave" la nouvelle date dans le jeton
+        // 3. Nouveau Token avec la nouvelle date
         const newToken = jwt.sign(
             {
                 id: updatedUser.id,
                 name: updatedUser.name,
                 email: updatedUser.email,
                 role: updatedUser.role,
-                subscriptionExpiresAt: updatedUser.subscriptionExpiresAt // La nouvelle date !
+                subscriptionExpiresAt: updatedUser.subscriptionExpiresAt 
             },
             process.env.JETON_CODE,
             { expiresIn: JWT_EXPIRATION }
         );
 
-        // 4. Réponse
         res.status(200).json({
-            message: "Payment successful",
-            token: newToken, // Le frontend devra stocker ce nouveau token
+            message: "Paiement validé",
+            token: newToken,
             user: updatedUser
         });
 
     } catch (error) {
+        console.error("Erreur Backend Paiement:", error);
         next(error);
     }
 };

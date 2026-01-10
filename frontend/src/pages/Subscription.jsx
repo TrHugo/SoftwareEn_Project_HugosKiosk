@@ -6,6 +6,10 @@ export default function Subscription() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  // 1. VÉRIFICATION DU STATUT D'ABONNEMENT
+  // On regarde si l'user existe ET s'il a une date dans le futur
+  const isSubscribed = user?.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > new Date();
+
   const plans = [
     {
       id: 1,
@@ -13,7 +17,7 @@ export default function Subscription() {
       price: "3.99€",
       duration: "/ week",
       tagline: "Just passing through?",
-      description: "Perfect for short-term access. Unlock all articles for 7 days. Cancel anytime.", // Texte légèrement raccourci
+      description: "Perfect for short-term access. Unlock all articles for 7 days. Cancel anytime.",
       savingsText: null,
       isHighlight: false
     },
@@ -40,6 +44,9 @@ export default function Subscription() {
   ];
 
   const handleSubscribe = (plan) => {
+    // Sécurité supplémentaire : si abonné, on ne fait rien
+    if (isSubscribed) return;
+
     if (!user) {
       navigate('/login');
     } else {
@@ -47,23 +54,18 @@ export default function Subscription() {
     }
   };
 
-  // --- STYLES COMPACTS ---
+  // --- STYLES ---
   const styles = {
     pageContainer: {
       display: 'flex', flexDirection: 'column', alignItems: 'center',
-      // ON RÉDUIT ICI : Moins de padding en haut (10px au lieu de 40px)
       padding: '0px 20px 40px 20px', 
       color: '#5A4A42', 
-      // On retire minHeight pour laisser le contenu dicter la hauteur si besoin, 
-      // mais sur un grand écran ça n'impacte pas.
     },
     header: { 
       textAlign: 'center', 
-      // ON RÉDUIT ICI : Marge drastiquement réduite (20px au lieu de 50px)
       marginBottom: '20px' 
     },
     title: { 
-      // ON RÉDUIT ICI : Titre un peu plus petit
       fontSize: '2rem', 
       fontWeight: 'bold', 
       marginBottom: '5px' 
@@ -74,25 +76,25 @@ export default function Subscription() {
     },
     cardsContainer: {
       display: 'flex', justifyContent: 'center', alignItems: 'stretch',
-      gap: '20px', // Gap un peu plus serré
-      flexWrap: 'wrap', width: '100%', maxWidth: '1100px', // Max width un peu réduit
+      gap: '20px', 
+      flexWrap: 'wrap', width: '100%', maxWidth: '1100px', 
     },
     card: (isHighlight) => ({
       backgroundColor: isHighlight ? '#5A4A42' : '#FFF',
       color: isHighlight ? '#E8DCC0' : '#5A4A42',
       border: isHighlight ? 'none' : '1px solid #E8DCC0',
       borderRadius: '20px', 
-      // ON RÉDUIT ICI : Padding interne de la carte (25px au lieu de 40px)
       padding: '25px 20px', 
       width: '300px', 
-      // ON RÉDUIT ICI : Hauteur minimale réduite (420px au lieu de 520px)
       minHeight: '420px', 
       display: 'flex', flexDirection: 'column',
       boxShadow: '0 8px 20px rgba(0,0,0,0.1)', position: 'relative',
       transition: 'transform 0.2s',
+      // Si abonné, on réduit un peu l'opacité des cartes pour montrer qu'elles sont inactives
+      opacity: isSubscribed ? 0.8 : 1 
     }),
     planName: { 
-      fontSize: '1.3rem', // Légèrement réduit
+      fontSize: '1.3rem', 
       fontWeight: 'bold', 
       marginBottom: '5px', 
       textTransform: 'uppercase', 
@@ -102,17 +104,17 @@ export default function Subscription() {
       fontSize: '0.85rem',
       fontWeight: 'bold',
       color: isHighlight ? '#FFF' : '#27ae60',
-      marginBottom: '5px', // Réduit
+      marginBottom: '5px', 
       display: 'block',
       minHeight: '20px'
     }),
     priceContainer: { 
-      marginBottom: '15px', // Réduit
+      marginBottom: '15px', 
       borderBottom: '1px solid currentColor', 
-      paddingBottom: '15px' // Réduit
+      paddingBottom: '15px' 
     },
     price: { 
-      fontSize: '2.5rem', // ON RÉDUIT ICI : (2.5rem au lieu de 3rem)
+      fontSize: '2.5rem', 
       fontWeight: '700' 
     },
     duration: { fontSize: '0.9rem', opacity: 0.7 },
@@ -125,18 +127,29 @@ export default function Subscription() {
     },
     description: { 
       fontSize: '0.95rem', 
-      lineHeight: '1.4', // Interligne un peu plus serré
+      lineHeight: '1.4', 
       flexGrow: 1, 
-      marginBottom: '20px', // Marge avant le bouton réduite
+      marginBottom: '20px', 
       opacity: 0.9 
     },
-    button: (isHighlight) => ({
-      padding: '12px', // Bouton un peu moins haut
+    // 2. MODIFICATION DU STYLE DU BOUTON
+    button: (isHighlight, disabled) => ({
+      padding: '12px', 
       borderRadius: '50px', border: 'none',
-      fontSize: '0.95rem', fontWeight: 'bold', cursor: 'pointer',
-      backgroundColor: isHighlight ? '#E8DCC0' : '#2C2C2C',
-      color: isHighlight ? '#5A4A42' : '#DDD',
-      boxShadow: '0 4px 10px rgba(0,0,0,0.2)', marginTop: 'auto',
+      fontSize: '0.95rem', fontWeight: 'bold', 
+      marginTop: 'auto',
+      boxShadow: disabled ? 'none' : '0 4px 10px rgba(0,0,0,0.2)',
+      
+      // Gestion des couleurs : Actif vs Désactivé
+      backgroundColor: disabled 
+        ? '#ccc' // Gris si désactivé
+        : (isHighlight ? '#E8DCC0' : '#2C2C2C'),
+        
+      color: disabled 
+        ? '#666' // Gris foncé texte si désactivé
+        : (isHighlight ? '#5A4A42' : '#DDD'),
+        
+      cursor: disabled ? 'not-allowed' : 'pointer', // Curseur interdit
     }),
     badge: {
       position: 'absolute', top: '-12px', right: '15px',
@@ -173,11 +186,13 @@ export default function Subscription() {
             <div style={styles.tagline}>{plan.tagline}</div>
             <div style={styles.description}>{plan.description}</div>
 
+            {/* 3. LOGIQUE D'AFFICHAGE DU BOUTON */}
             <button 
-              style={styles.button(plan.isHighlight)}
+              style={styles.button(plan.isHighlight, isSubscribed)}
               onClick={() => handleSubscribe(plan)}
+              disabled={isSubscribed} // Désactive le clic HTML
             >
-              Get Subscription
+              {isSubscribed ? "Already Subscribed" : "Get Subscription"}
             </button>
           </div>
         ))}
