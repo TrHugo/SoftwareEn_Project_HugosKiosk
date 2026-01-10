@@ -1,25 +1,14 @@
-/**
- * App entrypoint.
- * We keep the HTTP listener separate from the Express app instance so
- * tests can import `app` without opening a real port.
- */
-/**
- * App entrypoint.
- * Le serveur n'écoute le port que si la connexion DB est réussie.
- */
 import dotenv from "dotenv";
 dotenv.config();
 import app from "./app.js";
-import {connectDb} from "./db.js"; 
+import { connectDb } from "./db.js"; 
 
 const PORT = process.env.PORT || 3000;
 
 async function start() {
   try {
-    
     await connectDb();
 
-  
     app.listen(PORT, () => {
       console.log(`[server] listening on http://localhost:${PORT}`);
     });
