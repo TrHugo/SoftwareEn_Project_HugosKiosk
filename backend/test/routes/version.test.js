@@ -1,7 +1,3 @@
-/**
- * Integration test for GET /version.
- * Focus: HTTP behavior & payload shape.
- */
 import request from "supertest";
 import { describe, it, expect } from "vitest";
 import app from "../../src/app.js";
