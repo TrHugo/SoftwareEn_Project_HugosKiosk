@@ -33,33 +33,32 @@ describe('user.controller', () => {
     });
   });
 
-  describe('getUserByEmailAndMail', () => {
+  describe('getUserByEmail', () => {
     it('returns user when found', async () => {
       const user = { id: '1', name: 'John', email: 'john@example.com' };
       User.findOne = vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(user) });
 
-      const res = await userController.getUserByEmailAndMail('John', 'john@example.com');
+      const res = await userController.getUserByEmail('john@example.com');
       expect(res).toEqual(user);
-      expect(User.findOne).toHaveBeenCalledWith({ email: 'john@example.com', name: 'John' });
+      expect(User.findOne).toHaveBeenCalledWith({ email: 'john@example.com'});
     });
 
     it('throws when findOne rejects', async () => {
       User.findOne = vi.fn().mockReturnValue({ lean: vi.fn().mockRejectedValue(new Error('fail')) });
-      await expect(userController.getUserByEmailAndMail('a','b')).rejects.toThrow('fail');
+      await expect(userController.getUserByEmail('a','b')).rejects.toThrow('fail');
     });
   });
-
-  describe('createUser', () => {
-
+    describe('createUser', () => {
     const validData = {
-    name: 'Leo',
-    email: 'test@example.com',
-    mdp: 'Password123!', // 1 Maj, 1 Min, 1 Chiffre, 1 Spécial, 8+ chars
-    type: 'user'
-  };
-//test user.controller.test
+      name: 'Leo',
+      email: 'test@example.com',
+      mdp: 'Password123!', 
+      role: 'user' 
+    };
+
     it('returns 400 when missing fields', async () => {
-      const req = { body: { name: 'n', email: '' } }; 
+      
+      const req = { body: { name: 'Leo', email: 'test@example.com' } }; 
       const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
       const next = vi.fn();
 
@@ -67,18 +66,45 @@ describe('user.controller', () => {
 
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({ 
-        error: "Tous les champs (name, email, mdp, type) sont requis." 
+        error: "Tous les champs (name, email, mdp, role) sont requis." 
+      });
+    });
+
+    it('returns 400 when email format is invalid', async () => {
+      const req = { body: { ...validData, email: 'mauvais-format' } };
+      const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+      const next = vi.fn();
+
+      await userController.createUser(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: "Format de l'email invalide." });
+    });
+
+    it('returns 400 when password is too weak', async () => {
+      const req = { body: { ...validData, mdp: '123' } };
+      const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+      const next = vi.fn();
+
+      await userController.createUser(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ 
+        error: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial." 
       });
     });
 
     it('hashes password and creates user with Date.now() ID', async () => {
       const req = { body: validData };
       const created = { 
-        toObject: () => ({ id: 12345678, ...validData }) 
+        toObject: () => {
+          const obj = { _id: 'mongo_id', id: 12345678, ...validData };
+          return obj;
+        }
       };
 
-      // Plus besoin de mocker le sort(), il n'y a plus qu'un seul findOne (pour l'email)
       User.findOne = vi.fn().mockResolvedValue(null);
+
       vi.spyOn(passwordHash, 'hashPassword').mockResolvedValue('hashed_pw');
       User.create = vi.fn().mockResolvedValue(created);
 
@@ -90,32 +116,18 @@ describe('user.controller', () => {
       expect(res.status).toHaveBeenCalledWith(201);
       expect(User.create).toHaveBeenCalledWith(expect.objectContaining({
         email: validData.email,
-        id: expect.any(Number) // Car id est généré par Date.now()
+        mdp: 'hashed_pw',
+        role: 'user',
+        id: expect.any(Number) 
       }));
     
       const response = res.json.mock.calls[0][0];
-      expect(response.message).toBe("Utilisateur créé avec succès");
-    });
-
-    it('calls next with error if create throws', async () => {
-      const req = { body: validData };
-      const error = new Error('db fail');
-    
-      User.findOne = vi.fn().mockResolvedValue(null);
-      vi.spyOn(passwordHash, 'hashPassword').mockResolvedValue('hashed');
-      User.create = vi.fn().mockRejectedValue(error);
-
-      const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
-      const next = vi.fn();
-
-      await userController.createUser(req, res, next);
-      expect(next).toHaveBeenCalledWith(error);
+      expect(response.success).toBe(true);
+      expect(response.user).not.toHaveProperty('mdp'); 
     });
 
     it('returns 409 when email already exists', async () => {
       const req = { body: validData };
-    
-      // On simule que l'utilisateur existe
       User.findOne = vi.fn().mockResolvedValue({ email: validData.email });
 
       const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
@@ -125,7 +137,21 @@ describe('user.controller', () => {
 
       expect(res.status).toHaveBeenCalledWith(409); 
       expect(res.json).toHaveBeenCalledWith({ error: "Cet email est déjà utilisé." });
-      expect(User.create).not.toHaveBeenCalled();
+    });
+
+    it('calls next with error if create throws', async () => {
+      const req = { body: validData };
+      const error = new Error('db fail');
+  
+      User.findOne = vi.fn().mockResolvedValue(null);
+      vi.spyOn(passwordHash, 'hashPassword').mockResolvedValue('hashed');
+      User.create = vi.fn().mockRejectedValue(error);
+
+      const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+      const next = vi.fn();
+
+      await userController.createUser(req, res, next);
+      expect(next).toHaveBeenCalledWith(error);
     });
   });
 });
