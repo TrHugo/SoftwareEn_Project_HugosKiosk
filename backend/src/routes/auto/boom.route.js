@@ -1,6 +1,3 @@
-/**
- * GET /boom → triggers an error to exercise the global error handler.
- */
 import { Router } from "express";
 
 const router = Router();
