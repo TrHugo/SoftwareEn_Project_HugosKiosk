@@ -6,7 +6,6 @@ export default function Profile() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  // Fonction pour formater la date proprement (ex: "12/05/2026")
   const formatDate = (dateString) => {
     if (!dateString) return null;
     return new Date(dateString).toLocaleDateString('en-GB', {
@@ -14,7 +13,6 @@ export default function Profile() {
     });
   };
 
-  // --- STYLES ---
   const styles = {
     container: {
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -23,8 +21,7 @@ export default function Profile() {
     heading: { fontSize: '2.5rem', marginBottom: '10px', fontWeight: '600' },
     subtext: { fontSize: '1.1rem', marginBottom: '40px', opacity: 0.8, textAlign: 'center', maxWidth: '400px' },
     buttonGroup: { display: 'flex', flexDirection: 'column', gap: '20px', width: '100%', maxWidth: '300px' },
-    
-    // BOUTONS LOGIN / REGISTER
+
     loginBtn: {
       backgroundColor: '#E8DCC0', color: '#5A4A42', border: 'none', padding: '18px',
       borderRadius: '50px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer',
@@ -40,11 +37,10 @@ export default function Profile() {
       color: '#5A4A42', padding: '10px 25px', borderRadius: '50px', cursor: 'pointer', fontWeight: 'bold',
     },
 
-    // NOUVEAU : Style pour la boîte d'info abonnement
     subscriptionBox: {
       marginTop: '20px',
       padding: '20px',
-      backgroundColor: '#fdfbf7', // Un beige très très clair
+      backgroundColor: '#fdfbf7',
       border: '1px solid #E8DCC0',
       borderRadius: '15px',
       textAlign: 'center',
@@ -53,14 +49,12 @@ export default function Profile() {
       boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
     },
     statusLabel: { fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 'bold', color: '#888', marginBottom: '5px' },
-    statusValue: { fontSize: '1.2rem', fontWeight: 'bold', color: '#27ae60' }, // Vert pour actif
-    statusValueInactive: { fontSize: '1.2rem', fontWeight: 'bold', color: '#c0392b' } // Rouge pour inactif
+    statusValue: { fontSize: '1.2rem', fontWeight: 'bold', color: '#27ae60' },
+    statusValueInactive: { fontSize: '1.2rem', fontWeight: 'bold', color: '#c0392b' }
   };
 
-  // --- ETAT CONNECTÉ ---
   if (user) {
     const formattedDate = formatDate(user.subscriptionExpiresAt);
-    // On vérifie si la date existe ET si elle est dans le futur
     const isActive = user.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > new Date();
 
     return (
@@ -69,11 +63,10 @@ export default function Profile() {
         <p style={styles.subtext}>
           Logged in as: <strong>{user.email}</strong>
         </p>
-        
-        {/* BOITE D'INFORMATION ABONNEMENT */}
+
         <div style={styles.subscriptionBox}>
           <div style={styles.statusLabel}>Subscription Status</div>
-          
+
           {isActive ? (
             <>
               <div style={styles.statusValue}>Active Premium Access</div>
@@ -104,14 +97,13 @@ export default function Profile() {
     );
   }
 
-  // --- ETAT DÉCONNECTÉ (Reste inchangé) ---
   return (
     <div style={styles.container}>
       <h1 style={styles.heading}>My Profile</h1>
       <p style={styles.subtext}>
         Access your personal space to manage your subscription and preferences.
       </p>
-      
+
       <div style={styles.buttonGroup}>
         <button onClick={() => navigate('/login')} style={styles.loginBtn}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
