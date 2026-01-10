@@ -6,8 +6,6 @@ export default function Subscription() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // 1. VÉRIFICATION DU STATUT D'ABONNEMENT
-  // On regarde si l'user existe ET s'il a une date dans le futur
   const isSubscribed = user?.subscriptionExpiresAt && new Date(user.subscriptionExpiresAt) > new Date();
 
   const plans = [
@@ -54,7 +52,6 @@ export default function Subscription() {
     }
   };
 
-  // --- STYLES ---
   const styles = {
     pageContainer: {
       display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -132,7 +129,6 @@ export default function Subscription() {
       marginBottom: '20px', 
       opacity: 0.9 
     },
-    // 2. MODIFICATION DU STYLE DU BOUTON
     button: (isHighlight, disabled) => ({
       padding: '12px', 
       borderRadius: '50px', border: 'none',
@@ -140,7 +136,6 @@ export default function Subscription() {
       marginTop: 'auto',
       boxShadow: disabled ? 'none' : '0 4px 10px rgba(0,0,0,0.2)',
       
-      // Gestion des couleurs : Actif vs Désactivé
       backgroundColor: disabled 
         ? '#ccc' // Gris si désactivé
         : (isHighlight ? '#E8DCC0' : '#2C2C2C'),
@@ -149,7 +144,7 @@ export default function Subscription() {
         ? '#666' // Gris foncé texte si désactivé
         : (isHighlight ? '#5A4A42' : '#DDD'),
         
-      cursor: disabled ? 'not-allowed' : 'pointer', // Curseur interdit
+      cursor: disabled ? 'not-allowed' : 'pointer',
     }),
     badge: {
       position: 'absolute', top: '-12px', right: '15px',
