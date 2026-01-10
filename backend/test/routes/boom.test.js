@@ -1,7 +1,3 @@
-/**
- * Integration test for GET /boom.
- * Ensures global error handler shapes the response.
- */
 import request from "supertest";
 import { describe, it, expect } from "vitest";
 import app from "../../src/app.js";
