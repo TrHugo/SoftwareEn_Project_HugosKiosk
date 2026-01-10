@@ -18,6 +18,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Subscription from './pages/Subscription';
 import { ProtectedRoute } from './context/ProtectedRoute';
+import Payment from './pages/Payment';
 
 import './App.css';
 
@@ -42,6 +43,7 @@ function App() {
           <Route path="/article/:id" element={<ProtectedRoute><ArticleReader pageName="Article Reader" /></ProtectedRoute>} />
           <Route path="/login" element={<Login pageName="Log In" />} />
           <Route path="/register" element={<Register pageName="Register" />} />
+          <Route path="/payment" element={<Payment />} />
         </Routes>
 
         <Footer />
