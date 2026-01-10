@@ -5,41 +5,77 @@ import { useAuth } from '../context/AuthContext';
 export default function Payment() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
   
-  // Récupérer le plan choisi depuis la page précédente
+  // MODIFICATION 1 : On récupère 'login' pour mettre à jour l'app après paiement
+  const { user, login } = useAuth();
+  
   const plan = location.state?.plan;
-
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Rediriger si on arrive ici sans avoir choisi de plan
   useEffect(() => {
     if (!plan) {
       navigate('/subscribe');
     }
   }, [plan, navigate]);
 
-  if (!plan) return null; // Sécurité visuelle
+  if (!plan) return null;
 
-  const handlePayment = (e) => {
+  const handlePayment = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // --- SIMULATION DU VIREMENT SÉCURISÉ ---
-    // Ici, dans la vraie vie, on appellerait Stripe ou ton Backend
-    setTimeout(() => {
-      setIsLoading(false);
-      setSuccess(true);
-      
-      // Après 2 secondes de succès, on redirige vers le profil
+    try {
+      // 1. Récupération du token actuel (pour prouver qu'on est connecté)
+      const currentToken = localStorage.getItem('token');
+      if (!currentToken) throw new Error("Vous devez être connecté");
+
+      // 2. Appel au Backend (Route créée précédemment)
+      const response = await fetch('/api/payment/confirm', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentToken}` // On envoie le token dans le header
+        },
+        body: JSON.stringify({ 
+          planName: plan.name // "Discovery", "Regular" ou "Premium"
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Erreur lors du paiement");
+      }
+
+      // --- SIMULATION VISUELLE (Pour garder l'effet d'attente pro) ---
       setTimeout(() => {
-        navigate('/profile');
-      }, 2000);
-    }, 2000); // On simule 2 secondes de "traitement bancaire"
+        
+        // 3. MISE À JOUR CRITIQUE
+        // On remplace le vieux token par le nouveau (qui contient la nouvelle date d'expiration)
+        localStorage.setItem('token', data.token);
+        
+        // On met à jour le contexte React avec le nouvel utilisateur (pour que la Profile page soit verte)
+        login(data.user);
+
+        setIsLoading(false);
+        setSuccess(true);
+        
+        // Redirection
+        setTimeout(() => {
+          navigate('/profile');
+        }, 2000);
+
+      }, 1500); // On garde 1.5s de "Processing..." pour l'effet réaliste
+
+    } catch (error) {
+      console.error("Erreur paiement:", error);
+      setIsLoading(false);
+      alert("Le paiement a échoué : " + error.message);
+    }
   };
 
-  // --- STYLES ---
+  // --- STYLES (Identiques à avant) ---
   const styles = {
     container: {
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -48,18 +84,15 @@ export default function Payment() {
     wrapper: {
       display: 'flex', gap: '40px', flexWrap: 'wrap', justifyContent: 'center', width: '100%', maxWidth: '900px'
     },
-    // COLONNE GAUCHE : RÉCAP
     summaryCard: {
-      backgroundColor: '#E8DCC0', // Beige Header
+      backgroundColor: '#E8DCC0',
       padding: '30px', borderRadius: '20px', flex: '1', minWidth: '300px',
       display: 'flex', flexDirection: 'column', justifyContent: 'space-between'
     },
     planTitle: { fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '10px' },
-    priceBig: { fontSize: '2.5rem', fontWeight: '800', marginBottom: '20px' },
     divider: { height: '1px', backgroundColor: '#5A4A42', opacity: 0.2, margin: '20px 0' },
     totalRow: { display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', fontWeight: 'bold' },
     
-    // COLONNE DROITE : FORMULAIRE
     formCard: {
       backgroundColor: '#fff', padding: '30px', borderRadius: '20px', flex: '1.5', minWidth: '320px',
       boxShadow: '0 10px 30px rgba(0,0,0,0.05)', border: '1px solid #eee'
@@ -74,7 +107,6 @@ export default function Payment() {
     },
     row: { display: 'flex', gap: '15px' },
     
-    // BOUTON PAYER
     payButton: {
       width: '100%', padding: '18px', marginTop: '20px',
       backgroundColor: '#2C2C2C', color: '#fff', border: 'none', borderRadius: '50px',
@@ -83,7 +115,6 @@ export default function Payment() {
       opacity: isLoading ? 0.7 : 1,
     },
     
-    // ÉCRAN DE SUCCÈS
     successOverlay: {
       position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
       backgroundColor: 'rgba(255,255,255,0.95)', zIndex: 2000,
@@ -112,7 +143,7 @@ export default function Payment() {
       
       <div style={styles.wrapper}>
         
-        {/* RECAP DE LA COMMANDE */}
+        {/* RECAP */}
         <div style={styles.summaryCard}>
           <div>
             <div style={styles.planTitle}>{plan.name} Plan</div>
@@ -130,14 +161,21 @@ export default function Payment() {
           </div>
         </div>
 
-        {/* FORMULAIRE DE PAIEMENT */}
+        {/* FORMULAIRE */}
         <div style={styles.formCard}>
           <div style={styles.formTitle}>Payment Details</div>
           <form onSubmit={handlePayment}>
             
             <div style={styles.inputGroup}>
               <label style={styles.label}>Cardholder Name</label>
-              <input type="text" placeholder="Hugo ..." required style={styles.input} />
+              {/* MODIFICATION 2 : Pré-remplissage du nom */}
+              <input 
+                type="text" 
+                placeholder="Hugo ..." 
+                defaultValue={user?.name}
+                required 
+                style={styles.input} 
+              />
             </div>
 
             <div style={styles.inputGroup}>

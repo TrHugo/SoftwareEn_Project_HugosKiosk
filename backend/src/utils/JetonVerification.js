@@ -1,67 +1,72 @@
 import jwt from 'jsonwebtoken';
 
+// 1. checkUser
 export const checkUser = (req, res, next) => {
     try {
         if (!req.headers || !req.headers.authorization) {
             throw new Error('No authorization header');
         }
-        const token = req.headers.authorization.split(" ")[1]; 
-        let decodedToken = jwt.verify(token, process.env.JETON_CODE);
 
-        if (decodedToken.id === undefined || decodedToken.role === undefined) {
+        const token = req.headers.authorization.split(" ")[1]; 
+        const decodedToken = jwt.verify(token, process.env.JETON_CODE);
+
+        if (!decodedToken.id || !decodedToken.role) {
             throw new Error("Missing essential user data in token.");
         }
 
         req.userId = String(decodedToken.id);
         req.userRole = String(decodedToken.role);
+        // On récupère la date si elle existe
+        req.subscriptionExpiresAt = decodedToken.subscriptionExpiresAt;
 
         next();
 
     } catch (error) {
-        console.error("caught error : ",error.message);
-        const err = new Error("Failed Authentification. Access refused");
+        console.error("Auth Error:", error.message);
+        const err = new Error("Authentification échouée. Accès refusé.");
         err.status = 401;
         return next(err);
     }
 };
+
+// 2. checkRole
 export const checkRole = (requiredRoles) => {
     return (req, res, next) => {
         if (!req.userRole || !requiredRoles) {
-            const err = new Error("No role found");
+            const err = new Error("Rôle introuvable");
             err.status = 500;
             return next(err);
         }
 
-        const userRole = req.userRole;
-
-        if (requiredRoles.includes(userRole)) {
+        if (requiredRoles.includes(req.userRole)) {
             return next();
-        } 
-        else {
-            const err = new Error(`Access Forbidden`);
+        } else {
+            const err = new Error("Accès interdit : Droits insuffisants");
             err.status = 403; 
             return next(err);
         }
     };
 };
 
+// 3. CheckSubsription (AVEC L'ANCIEN NOM POUR NE RIEN CASSER)
 export const CheckSubsription = (req, res, next) => {
     try {
-        const authHeader = req.headers.authorization;
-        const token = authHeader.split(" ")[1];
+        const token = req.headers.authorization.split(" ")[1];
         const decodedToken = jwt.verify(token, process.env.JETON_CODE);
+        
+        // On utilise le bon champ dans le token
+        const expirationDate = decodedToken.subscriptionExpiresAt;
 
-        const expirationDate = decodedToken.subscription;
-
+        // Si pas de date OU si la date est passée
         if (!expirationDate || new Date(expirationDate) < new Date()) {
-            const err = new Error("Abonnement requis ou expiré");
+            const err = new Error("No subscription or subscription expired");
             err.status = 403; 
             return next(err);
         }
 
         next();
     } catch (error) {
-        const err = new Error("Erreur authentification");
+        const err = new Error("Subscription verification failed");
         err.status = 401;
         return next(err);
     }
