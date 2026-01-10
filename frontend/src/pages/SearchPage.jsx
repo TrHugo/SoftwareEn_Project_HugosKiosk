@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import NewsCard from '../component/NewsCard'; // On réutilise tes cartes existantes !
+import NewsCard from '../component/NewsCard';
 
 const SearchPage = () => {
-  const [query, setQuery] = useState(''); // Ce que l'utilisateur tape
-  const [results, setResults] = useState([]); // Les articles trouvés
-  const [hasSearched, setHasSearched] = useState(false); // Pour savoir si on affiche "Aucun résultat"
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+  const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Fonction appelée quand on clique sur la loupe ou qu'on tape Entrée
   const handleSearch = async (e) => {
-    e.preventDefault(); // Empêche le rechargement de la page
-    if (!query.trim()) return; // Ne cherche pas si vide
+    e.preventDefault();
+    if (!query.trim()) return;
 
     setLoading(true);
     setHasSearched(true);
@@ -32,8 +31,7 @@ const SearchPage = () => {
   return (
     <main style={styles.container}>
       <h1 style={styles.title}>Search</h1>
-      
-      {/* --- Barre de recherche --- */}
+
       <form onSubmit={handleSearch} style={styles.searchBarContainer}>
         <input 
           type="text" 
@@ -43,7 +41,6 @@ const SearchPage = () => {
           onChange={(e) => setQuery(e.target.value)}
         />
         <button type="submit" style={styles.searchButton}>
-          {/* Icône Loupe SVG */}
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -51,7 +48,6 @@ const SearchPage = () => {
         </button>
       </form>
 
-      {/* --- Résultats --- */}
       <div style={styles.resultsArea}>
         {loading && <p style={styles.message}>Recherche en cours...</p>}
 
@@ -87,7 +83,7 @@ const styles = {
     minHeight: '60vh',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center', // Centre tout horizontalement
+    alignItems: 'center',
   },
   title: {
     fontSize: '32px',
@@ -99,9 +95,9 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     backgroundColor: '#FFF',
-    borderRadius: '50px', // Très arrondi (pill shape)
+    borderRadius: '50px',
     padding: '10px 20px',
-    boxShadow: '0 4px 15px rgba(0,0,0,0.08)', // Belle ombre douce
+    boxShadow: '0 4px 15px rgba(0,0,0,0.08)',
     width: '100%',
     maxWidth: '600px',
     marginBottom: '50px',
@@ -112,7 +108,7 @@ const styles = {
     border: 'none',
     outline: 'none',
     fontSize: '16px',
-    flex: 1, // Prend toute la place disponible
+    flex: 1,
     color: '#333',
     backgroundColor: 'transparent',
   },
