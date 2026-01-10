@@ -70,10 +70,14 @@ router.get('/article/:articleId', checkUser, async (req, res, next) => {
     // avant de renvoyer l'article (ex: pour voir les articles non-actifs)
     try {
         const articleId = req.params.articleId;
-        if (isNaN(articleId)) return next(new Error("Invalid ID"));
+        if (isNaN(articleId)) {
+            const err = new Error("Invalid ID");
+            err.status = 400;
+            return next(err);
+        }
         const article = await getArticleById(articleId);
         if (article) res.status(200).json({ success: true, article });
-        else res.status(404).json({ error: "Not found" });
+        else res.status(404).json({ message: "No Article found" });
     } catch(e) { next(e); }
 });
 

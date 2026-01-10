@@ -24,7 +24,7 @@ const NON_EXISTING_ARTICLE_ID = 9999;
 describe("GET /article/:articleId", () => {
     it("401 if missing token", async () => {
         const res = await request(app)
-            .get(`/article/${EXISTING_ARTICLE_ID}`);
+            .get(`/api/article/${EXISTING_ARTICLE_ID}`);
 
         expect(res.status).toBe(401);
         expect(res.body.message).toBe("Failed Authentification. Access refused");
@@ -32,7 +32,7 @@ describe("GET /article/:articleId", () => {
 
     it("401 if invalid token", async () => {
         const res = await request(app)
-            .get(`/article/${EXISTING_ARTICLE_ID}`)
+            .get(`/api/article/${EXISTING_ARTICLE_ID}`)
             .set("Authorization", INVALID_AUTHORIZATION_HEADER);
 
         expect(res.status).toBe(401);
@@ -42,7 +42,7 @@ describe("GET /article/:articleId", () => {
     it("200 with valid token and valid article", async () => {
         getArticleById.mockResolvedValue({ id: EXISTING_ARTICLE_ID, title: "Titre", content: "Text" });
         const res = await request(app)
-            .get(`/article/${EXISTING_ARTICLE_ID}`)
+            .get(`/api/article/${EXISTING_ARTICLE_ID}`)
             .set("Authorization", AUTHORIZATION_HEADER); 
 
         expect(res.status).toBe(200);
@@ -53,27 +53,27 @@ describe("GET /article/:articleId", () => {
 
     it("400 with valid token and incorrect article id", async () => {
         const res = await request(app)
-            .get("/article/invalid-id")
+            .get("/api/article/invalid-id")
             .set("Authorization", AUTHORIZATION_HEADER);
 
         expect(res.status).toBe(400);
-        expect(res.body.message).toBe("Article ID incorrect");
+        expect(res.body.message).toBe("Invalid ID");
     });
 
     it("404 with valid token if article not found", async () => {
         const res = await request(app)
-            .get(`/article/${NON_EXISTING_ARTICLE_ID}`)
+            .get(`/api/article/${NON_EXISTING_ARTICLE_ID}`)
             .set("Authorization", AUTHORIZATION_HEADER);
 
-        expect(res.status).toBe(404);
         expect(res.body.message).toBe("No Article found");
+        expect(res.status).toBe(404);
     });
 
     it("500 if controller throws an error", async () => {
         getArticleById.mockRejectedValue(new Error("boom"));
 
         const res = await request(app)
-            .get(`/article/${EXISTING_ARTICLE_ID}`)
+            .get(`/api/article/${EXISTING_ARTICLE_ID}`)
             .set("Authorization", AUTHORIZATION_HEADER);
 
         expect(res.status).toBe(500);

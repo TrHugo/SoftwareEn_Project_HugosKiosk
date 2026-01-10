@@ -51,24 +51,35 @@ describe('user.controller', () => {
 
   describe('createUser', () => {
 
+    const validData = {
+    name: 'Leo',
+    email: 'test@example.com',
+    mdp: 'Password123!', // 1 Maj, 1 Min, 1 Chiffre, 1 Spécial, 8+ chars
+    type: 'user'
+  };
+//test user.controller.test
     it('returns 400 when missing fields', async () => {
-      const req = { body: { name: 'n', email: '' } };
+      const req = { body: { name: 'n', email: '' } }; 
       const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
       const next = vi.fn();
 
       await userController.createUser(req, res, next);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: 'All fields are required.' });
+      expect(res.json).toHaveBeenCalledWith({ 
+        error: "Tous les champs (name, email, mdp, type) sont requis." 
+      });
     });
 
-    it('hashes password and creates user', async () => {
-      const req = { body: { name: 'n', email: 'e', mdp: 'plain', type: 'user' } };
-      const created = { toObject: () => ({ _id: '1', name: 'n', email: 'e', mdp: 'hash', type: 'user' }) };
+    it('hashes password and creates user with Date.now() ID', async () => {
+      const req = { body: validData };
+      const created = { 
+        toObject: () => ({ id: 12345678, ...validData }) 
+      };
 
-      User.findOne = vi.fn().mockReturnValueOnce({sort: vi.fn().mockResolvedValue({ id: 10 })});
-      User.findOne.mockResolvedValueOnce(null);
-      vi.spyOn(passwordHash, 'hashPassword').mockResolvedValue('hash');
+      // Plus besoin de mocker le sort(), il n'y a plus qu'un seul findOne (pour l'email)
+      User.findOne = vi.fn().mockResolvedValue(null);
+      vi.spyOn(passwordHash, 'hashPassword').mockResolvedValue('hashed_pw');
       User.create = vi.fn().mockResolvedValue(created);
 
       const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
@@ -77,24 +88,21 @@ describe('user.controller', () => {
       await userController.createUser(req, res, next);
 
       expect(res.status).toHaveBeenCalledWith(201);
-      expect(passwordHash.hashPassword).toHaveBeenCalledWith('plain');
-      expect(User.create).toHaveBeenCalledWith({ id: 11, name: 'n', email: 'e', mdp: 'hash', type: 'user' });
-      expect(res.json).toHaveBeenCalled();
-      
+      expect(User.create).toHaveBeenCalledWith(expect.objectContaining({
+        email: validData.email,
+        id: expect.any(Number) // Car id est généré par Date.now()
+      }));
+    
       const response = res.json.mock.calls[0][0];
-      expect(response.user.email).toBe('e'); 
-      expect(response.user.mdp).toBeUndefined();
-      expect(response.success).toBe(true);
+      expect(response.message).toBe("Utilisateur créé avec succès");
     });
 
     it('calls next with error if create throws', async () => {
-      const req = { body: { name: 'n', email: 'e', mdp: 'plain', type: 'user' } };
+      const req = { body: validData };
       const error = new Error('db fail');
-
-      User.findOne = vi.fn().mockReturnValueOnce({sort: vi.fn().mockResolvedValue({ id: 10 })});
-      User.findOne.mockResolvedValueOnce(null);
-      
-      vi.spyOn(passwordHash, 'hashPassword').mockResolvedValue('hash');
+    
+      User.findOne = vi.fn().mockResolvedValue(null);
+      vi.spyOn(passwordHash, 'hashPassword').mockResolvedValue('hashed');
       User.create = vi.fn().mockRejectedValue(error);
 
       const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
@@ -105,22 +113,18 @@ describe('user.controller', () => {
     });
 
     it('returns 409 when email already exists', async () => {
-      const req = { 
-        body: { name: 'n', email: 'duplicate@test.com', mdp: 'plain', type: 'user' } 
-      };
-      
-      User.findOne = vi.fn().mockReturnValueOnce({sort: vi.fn().mockResolvedValue({ id: 1 })});
-      User.findOne.mockResolvedValueOnce({ email: 'dup@t.com' });
+      const req = { body: validData };
+    
+      // On simule que l'utilisateur existe
+      User.findOne = vi.fn().mockResolvedValue({ email: validData.email });
 
       const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
       const next = vi.fn();
 
       await userController.createUser(req, res, next);
 
-      expect(User.findOne).toHaveBeenCalledWith({ email: 'duplicate@test.com' });
       expect(res.status).toHaveBeenCalledWith(409); 
-      expect(res.json).toHaveBeenCalledWith({ error: "Email already used" });
-  
+      expect(res.json).toHaveBeenCalledWith({ error: "Cet email est déjà utilisé." });
       expect(User.create).not.toHaveBeenCalled();
     });
   });

@@ -40,7 +40,7 @@ describe('article.controller', () => {
 
       const res = await articleController.getArticlesNameAndIDByPublisher('pub1');
       expect(res).toEqual(articles);
-      expect(Article.find).toHaveBeenCalledWith({ publisher: 'pub1' }, 'title _id');
+      expect(Article.find).toHaveBeenCalledWith({ publisher: 'pub1' }, 'title _id id');
     });
 
     it('throws when find rejects', async () => {
@@ -73,7 +73,7 @@ describe('article.controller', () => {
 
       await articleController.createArticle(req, res, next);
 
-      expect(Article.create).toHaveBeenCalledWith({ id: 2, publisher: 'p', title: 't', content: 'c' });
+      expect(Article.create).toHaveBeenCalledWith({ id: 2, publisher: 'p', title: 't', content: 'c', active: true });
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith(created);
     });
