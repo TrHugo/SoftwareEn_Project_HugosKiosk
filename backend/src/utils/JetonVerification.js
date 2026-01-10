@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 
-// 1. checkUser
 export const checkUser = (req, res, next) => {
     try {
         if (!req.headers || !req.headers.authorization) {
@@ -16,7 +15,6 @@ export const checkUser = (req, res, next) => {
 
         req.userId = String(decodedToken.id);
         req.userRole = String(decodedToken.role);
-        // On récupère la date si elle existe
         req.subscriptionExpiresAt = decodedToken.subscriptionExpiresAt;
 
         next();
@@ -29,7 +27,6 @@ export const checkUser = (req, res, next) => {
     }
 };
 
-// 2. checkRole
 export const checkRole = (requiredRoles) => {
     return (req, res, next) => {
         if (!req.userRole || !requiredRoles) {
@@ -48,16 +45,13 @@ export const checkRole = (requiredRoles) => {
     };
 };
 
-// 3. CheckSubsription (AVEC L'ANCIEN NOM POUR NE RIEN CASSER)
 export const CheckSubsription = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(" ")[1];
         const decodedToken = jwt.verify(token, process.env.JETON_CODE);
         
-        // On utilise le bon champ dans le token
         const expirationDate = decodedToken.subscriptionExpiresAt;
 
-        // Si pas de date OU si la date est passée
         if (!expirationDate || new Date(expirationDate) < new Date()) {
             const err = new Error("No subscription or subscription expired");
             err.status = 403; 
